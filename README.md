@@ -1,4 +1,4 @@
-下面给出一个**可扩展的项目目录模板**（兼顾你们已完成的语音 + 手势代码），并解释各目录/文件的职责、典型输入输出，以及接下来需要补全的关键逻辑。你们可以直接把已有 `hand.py`、`main.py`、`action_handler.py` 迁移/拆分到对应位置，再按需要填充空白模块。
+下面给出一个**可扩展的项目目录模板**（兼顾已完成的语音 + 手势代码），并解释各目录/文件的职责、典型输入输出，以及接下来需要补全的关键逻辑。可以直接把已有 `hand.py`、`main.py`、`action_handler.py` 迁移/拆分到对应位置，再按需要填充空白模块。
 
 ```
 yaml复制编辑car_multimodal/
@@ -23,7 +23,7 @@ yaml复制编辑car_multimodal/
 │   │   └─ intent_classifier.py
 │   │       • in : 文本串
 │   │       • out: {"intent": str, "slots": dict, "conf": float}
-│   │       # 对应你们现有 whisper+SentenceTransformer 逻辑，可直接搬过来 :contentReference[oaicite:0]{index=0}:contentReference[oaicite:1]{index=1}
+│   │       # 对应现有 whisper+SentenceTransformer 逻辑，可直接搬过来 :contentReference[oaicite:0]{index=0}:contentReference[oaicite:1]{index=1}
 │   │
 │   ├─ vision/                # -------- 视觉子系统 --------
 │   │   ├─ __init__.py
@@ -42,7 +42,7 @@ yaml复制编辑car_multimodal/
 │   │
 │   ├─ actions/               # -------- 执行动作层 --------
 │   │   ├─ __init__.py
-│   │   └─ action_handler.py  # 你们现有的 TTS 反馈等 :contentReference[oaicite:4]{index=4}:contentReference[oaicite:5]{index=5}
+│   │   └─ action_handler.py  # 现有的 TTS 反馈等 :contentReference[oaicite:4]{index=4}:contentReference[oaicite:5]{index=5}
 │   │
 │   └─ utils/
 │       ├─ time_sync.py       # 统一时间戳、计算跨线程延迟
@@ -127,11 +127,12 @@ yaml复制编辑car_multimodal/
 
 ------
 
-## 你们下一步怎么做？
+## 下一步怎么做？
 
-1. **迁移现有代码**
-   - 把 `hand.py` 改成 `modules/vision/gesture_recognizer.py`（类封装 + `yield` 事件）。
-   - 把 `main.py` 的录音/识别拆成 `audio/recorder.py` + `speech_recognizer.py` + `intent_classifier.py`。
+1. **已补充的代码**
+   -  `modules/vision/gesture_recognizer.py`
+   -  `audio/recorder.py` + `speech_recognizer.py` + `intent_classifier.py`。
+   - `app.py`简单测试手势和语音**（手势识别准确率较低，语音识别太慢）**
 2. **快速打通 Rule Fusion**
    - 在 `app.py` 启动三个线程：语音、手势、视觉分心检测；事件经 `utils.bus.EventBus` 汇聚到 `rule_fusion`.
 3. **完成第三模态（视觉分心 + 头姿）**
@@ -139,5 +140,3 @@ yaml复制编辑car_multimodal/
 4. **补文档与测试**
    - 先在 `docs/architecture.md` 画出上面模块图；
    - `tests/` 写最小场景用例（CI 可用 pytest）。
-
-按这个骨架填充后，再根据课堂时间逐步丰富；祝你们顺利完成 6 月 1 日截止的演示!
