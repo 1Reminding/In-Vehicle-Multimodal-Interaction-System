@@ -1,0 +1,5 @@
+Whisper：
+1. conda install -c conda-forge ffmpeg
+（可能需要配置系统环境变量：~\anaconda3\envs\虚拟环境名\Library\bin）
+
+2. pip install -U openai-whisper
