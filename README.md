@@ -132,7 +132,7 @@ yaml复制编辑car_multimodal/
 1. **已补充的代码**
    -  `modules/vision/gesture_recognizer.py`
    -  `audio/recorder.py` + `speech_recognizer.py` + `intent_classifier.py`。
-   - `app.py`简单测试手势和语音**（手势识别准确率较低，语音识别太慢）**，注意：一定要在命令行执行`python app.py`
+   - `app.py`简单测试手势和语音**（手势识别准确率较低，语音识别太慢）**，注意：一定要在命令行执行`python app.py`**
 2. **快速打通 Rule Fusion**
    - 在 `app.py` 启动三个线程：语音、手势、视觉分心检测；事件经 `utils.bus.EventBus` 汇聚到 `rule_fusion`.
 3. **完成第三模态（视觉分心 + 头姿）**
