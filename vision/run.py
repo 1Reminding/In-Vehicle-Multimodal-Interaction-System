@@ -1,21 +1,13 @@
-from init import HeadPostEstimation
-from load import generate_image
+import cv2
 
-def main():
-    # 初始化头部姿态检测器
-    head_pose = HeadPostEstimation()
-    
-    # 设置检测参数（可选）
-    head_pose.frame_window_size = 15  # 设置检测窗口大小
-    
-    # 运行检测
-    for res in head_pose.classify_pose_in_euler_angles(
-        video=generate_image, 
-        poses=HeadPostEstimation.NOD_ACTION | HeadPostEstimation.SHAKE_ACTION
-    ):
-        # 获取检测结果
-        for action, frames in res.items():
-            print(f"检测到动作: {action}")
-
-if __name__ == "__main__":
-    main()
+cap = cv2.VideoCapture(0)
+while True:
+    ret, frame = cap.read()
+    if not ret or frame is None:
+        print("⚠️ 摄像头帧读取失败")
+        continue
+    cv2.imshow("Check Frame", frame)
+    if cv2.waitKey(1) == 27:
+        break
+cap.release()
+cv2.destroyAllWindows()
