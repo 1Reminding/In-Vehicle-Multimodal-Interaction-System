@@ -18,11 +18,18 @@ def calculate_head_pose(landmarks):
         left_eye = landmarks[33]
         right_eye = landmarks[263]
         
+        # 修改角度计算方法
         dx = right_eye.x - left_eye.x
         dy = nose_tip.y - chin.y
         
-        yaw = math.degrees(math.atan2(dx, 0.1))
-        pitch = math.degrees(math.atan2(dy, 0.1))
+        # 调整计算方式和缩放因子
+        yaw = math.degrees(math.atan2(dx, 0.3)) * 1.5  # 水平方向
+        pitch = math.degrees(math.atan2(dy, 0.5)) * 2.0  # 垂直方向
+        
+        # 限制角度范围
+        pitch = max(min(pitch, 45), -45)
+        yaw = max(min(yaw, 45), -45)
+        
         return pitch, yaw
     except Exception as e:
         print(f"❌ 计算姿态时出错: {e}")
@@ -86,22 +93,59 @@ with mp_face_mesh.FaceMesh(
 
                 pitch, yaw = calculate_head_pose(face_landmarks.landmark)
 
+                # 在屏幕上显示更详细的调试信息
+                cv2.putText(frame, f"Pitch (垂直): {pitch:.1f}", (10, 30),
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2)
+                cv2.putText(frame, f"Yaw (水平): {yaw:.1f}", (10, 60),
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2)
+                cv2.putText(frame, f"垂直阈值: ±30, 水平阈值: ±35", (10, 90),
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2)
+
+                # 设置更严格的阈值判断
                 head_pose = "正常"
-                if pitch < -15:
-                    head_pose = "点头"
-                elif pitch > 15:
-                    head_pose = "抬头"
-                elif abs(yaw) > 15:
+                status_color = (0, 255, 0)  # 默认绿色
+
+                # 分别判断垂直和水平方向的动作
+                if abs(pitch) > 30:
+                    if pitch < -30:
+                        head_pose = "点头"
+                        status_color = (0, 165, 255)
+                    elif pitch > 30:
+                        head_pose = "抬头"
+                        status_color = (0, 165, 255)
+                elif abs(yaw) > 35:
                     head_pose = "摇头"
+                    status_color = (0, 0, 255)
 
-                # 显示角度和判断
-                cv2.putText(frame, f"Pitch: {pitch:.1f}, Yaw: {yaw:.1f}", (10, 30),
-                            cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
-                cv2.putText(frame, f"姿态: {head_pose}", (10, 60),
-                            cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
+                cv2.putText(frame, f"当前状态: {head_pose}", (10, 120),
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.7, status_color, 2)
 
-        #  明确输出“准备显示图像”
-        print(" 正在显示图像窗口")
+                # 打印调试信息到控制台
+                print(f" 当前角度 - 垂直: {pitch:.1f}, 水平: {yaw:.1f}, 状态: {head_pose}")
+
+                # 添加状态持续判断
+                if 'last_pose' not in locals():
+                    last_pose = head_pose
+                    last_time = time.time()
+                elif head_pose != "正常" and head_pose != last_pose:
+                    # 只有在动作持续超过0.5秒才更新状态
+                    current_time = time.time()
+                    if current_time - last_time > 0.5:
+                        print(f" 检测到头部动作: {head_pose}")
+                        last_pose = head_pose
+                        last_time = current_time
+                elif head_pose == "正常" and head_pose != last_pose:
+                    # 回到正常状态时立即更新
+                    print(f" 恢复正常状态")
+                    last_pose = head_pose
+                    last_time = time.time()
+
+        else:
+            # 当没有检测到人脸时显示提示
+            cv2.putText(frame, "未检测到人脸", (10, 30),
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
+
+        # 移除频繁的打印输出
         cv2.imshow('Face Pose', frame)
 
         key = cv2.waitKey(1)
