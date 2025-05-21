@@ -118,6 +118,7 @@ class GestureRecognizer:
                     self.image_width = current_width
                     self.image_height = current_height
 
+
                 frame = cv2.flip(frame, 1)
                 rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
                 rgb.flags.writeable = False
@@ -127,13 +128,14 @@ class GestureRecognizer:
                 if res.multi_hand_landmarks:
                     for hlm in res.multi_hand_landmarks: 
                         gesture, conf = self._recognize_gesture(hlm)
-                        if gesture:
+                        if gesture and gesture != last_gesture:
                             yield {
                                 "type": "gesture",
                                 "gesture": gesture,
                                 "conf": float(conf),
                                 "ts": time.time(),
                             }
+                            last_gesture = gesture  # 更新上一次手势
         finally:
             self.cap.release()
             self.hands.close()
