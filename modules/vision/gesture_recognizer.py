@@ -10,19 +10,59 @@ Usage:
 import time
 import cv2
 import mediapipe as mp
+import numpy as np
+import csv
+import os
+import itertools
+import copy
+
+from .keypoint_classifier import KeyPointClassifier
 
 mp_hands = mp.solutions.hands
+
+
+# Helper functions from hand-keypoint-classification-model-zoo/main.py
+# (calc_bounding_rect is not used in the new _recognize_gesture, so omitted)
+def calc_landmark_list(image_width, image_height, landmarks):
+    landmark_point = []
+    for _, landmark in enumerate(landmarks.landmark):
+        landmark_x = min(int(landmark.x * image_width), image_width - 1)
+        landmark_y = min(int(landmark.y * image_height), image_height - 1)
+        landmark_point.append([landmark_x, landmark_y])
+    return landmark_point
+
+def pre_process_landmark(landmark_list):
+    temp_landmark_list = copy.deepcopy(landmark_list)
+    base_x, base_y = 0, 0
+    for index, landmark_point in enumerate(temp_landmark_list):
+        if index == 0:
+            base_x, base_y = landmark_point[0], landmark_point[1]
+        temp_landmark_list[index][0] = temp_landmark_list[index][0] - base_x
+        temp_landmark_list[index][1] = temp_landmark_list[index][1] - base_y
+    temp_landmark_list = list(itertools.chain.from_iterable(temp_landmark_list))
+    max_value = max(list(map(abs, temp_landmark_list)))
+    def normalize_(n):
+        return n / max_value if max_value != 0 else 0
+    temp_landmark_list = list(map(normalize_, temp_landmark_list))
+    return temp_landmark_list
 
 
 class GestureRecognizer:
     def __init__(
         self,
         camera_id: int = 0,
-        max_hands: int = 2,
-        det_conf: float = 0.75,
-        track_conf: float = 0.75,
+        max_hands: int = 1,
+        det_conf: float = 0.7,
+        track_conf: float = 0.5,
+        model_name: str = 'avazahedi',
     ):
         self.cap = cv2.VideoCapture(camera_id)
+        if not self.cap.isOpened():
+            self.cap.release()
+            self.cap = cv2.VideoCapture(camera_id)
+            if not self.cap.isOpened():
+                 raise RuntimeError(f"摄像头 {camera_id} 无法打开")
+
         self.hands = mp_hands.Hands(
             static_image_mode=False,
             max_num_hands=max_hands,
@@ -30,57 +70,35 @@ class GestureRecognizer:
             min_tracking_confidence=track_conf,
         )
 
-    # ---------- 手势判别核心逻辑（从 hand.py 迁移而来） ----------
-    @staticmethod
-    def _get_y(landmarks, idx):
-        return landmarks.landmark[idx].y
+        # Load KeyPointClassifier
+        script_dir = os.path.dirname(__file__)
+        model_path = os.path.join(script_dir, 'models', model_name, 'keypoint_classifier.tflite')
+        label_path = os.path.join(script_dir, 'models', model_name, 'keypoint_classifier_label.csv')
 
-    @staticmethod
-    def _get_x(landmarks, idx):
-        return landmarks.landmark[idx].x
+        if not os.path.exists(model_path):
+            raise FileNotFoundError(f"Model file not found: {model_path}")
+        if not os.path.exists(label_path):
+            raise FileNotFoundError(f"Label file not found: {label_path}")
+
+        self.keypoint_classifier = KeyPointClassifier(model_path=model_path)
+        with open(label_path, encoding='utf-8-sig') as f:
+            self.keypoint_classifier_labels = [row[0] for row in csv.reader(f)]
+        
+        self.image_width = int(self.cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+        self.image_height = int(self.cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+
 
     def _recognize_gesture(self, hand_landmarks):
-        lm = mp_hands.HandLandmark  # 枚举简写
-        # 下面保持原手势规则不变；如需增删手势，在此函数改即可
-        # 1. 识别“握拳”
-        tips = [
-            lm.THUMB_TIP,
-            lm.INDEX_FINGER_TIP,
-            lm.MIDDLE_FINGER_TIP,
-            lm.RING_FINGER_TIP,
-            lm.PINKY_TIP,
-        ]
-        pips = [
-            lm.THUMB_IP,
-            lm.INDEX_FINGER_PIP,
-            lm.MIDDLE_FINGER_PIP,
-            lm.RING_FINGER_PIP,
-            lm.PINKY_PIP,
-        ]
-        is_fist = all(
-            self._get_y(hand_landmarks, t) > self._get_y(hand_landmarks, p)
-            for t, p in zip(tips, pips)
-        )
-        if is_fist:
-            return "握拳", 0.95
+        landmark_list = calc_landmark_list(self.image_width, self.image_height, hand_landmarks)
 
-        # 2. 识别“大拇指朝上”
-        thumb_up = (
-            self._get_y(hand_landmarks, lm.THUMB_TIP)
-            < self._get_y(hand_landmarks, lm.THUMB_IP)
-            < self._get_y(hand_landmarks, lm.THUMB_MCP)
-        )
-        other_curled = all(
-            self._get_y(hand_landmarks, t) > self._get_y(hand_landmarks, p)
-            for t, p in zip(
-                [lm.INDEX_FINGER_TIP, lm.MIDDLE_FINGER_TIP, lm.RING_FINGER_TIP, lm.PINKY_TIP],
-                [lm.INDEX_FINGER_PIP, lm.MIDDLE_FINGER_PIP, lm.RING_FINGER_PIP, lm.PINKY_PIP],
-            )
-        )
-        if thumb_up and other_curled:
-            return "竖起大拇指", 0.92
+        pre_processed_landmark_list = pre_process_landmark(landmark_list)
 
-        # 3. 更多手势…（保持原 hand.py 规则，可继续扩展）
+        gesture_id, confidence = self.keypoint_classifier(pre_processed_landmark_list)
+        
+        if 0 <= gesture_id < len(self.keypoint_classifier_labels):
+            gesture_name = self.keypoint_classifier_labels[gesture_id]
+            return gesture_name, confidence
+        
         return None, 0.0
 
     # ---------- 外部接口 ----------
@@ -91,17 +109,29 @@ class GestureRecognizer:
             while True:
                 ok, frame = self.cap.read()
                 if not ok:
+                    time.sleep(0.01)
                     continue
+                
+                current_width = int(self.cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+                current_height = int(self.cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+                if self.image_width != current_width or self.image_height != current_height:
+                    self.image_width = current_width
+                    self.image_height = current_height
+
+                frame = cv2.flip(frame, 1)
                 rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+                rgb.flags.writeable = False
                 res = self.hands.process(rgb)
+                rgb.flags.writeable = True
+
                 if res.multi_hand_landmarks:
-                    for hlm in res.multi_hand_landmarks:
+                    for hlm in res.multi_hand_landmarks: 
                         gesture, conf = self._recognize_gesture(hlm)
                         if gesture:
                             yield {
                                 "type": "gesture",
                                 "gesture": gesture,
-                                "conf": conf,
+                                "conf": float(conf),
                                 "ts": time.time(),
                             }
         finally:
