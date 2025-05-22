@@ -1,5 +1,7 @@
 import cv2
 from init import HeadPostEstimation
+import os
+os.environ['FLAGS_use_mkldnn'] = '0'
 
 def generate_image():
     cap = cv2.VideoCapture(0)
