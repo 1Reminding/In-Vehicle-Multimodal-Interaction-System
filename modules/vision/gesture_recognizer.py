@@ -105,19 +105,23 @@ class GestureRecognizer:
     def run(self):
         if not self.cap.isOpened():
             raise RuntimeError("摄像头无法打开")
+
+        last_gesture = None  # 上一次输出的手势
+        last_conf = 0.0      # 上一次的置信度（可选判断，避免频繁抖动）
+
         try:
             while True:
                 ok, frame = self.cap.read()
                 if not ok:
                     time.sleep(0.01)
                     continue
-                
+
+                # 检查分辨率是否变动
                 current_width = int(self.cap.get(cv2.CAP_PROP_FRAME_WIDTH))
                 current_height = int(self.cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
                 if self.image_width != current_width or self.image_height != current_height:
                     self.image_width = current_width
                     self.image_height = current_height
-
 
                 frame = cv2.flip(frame, 1)
                 rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
@@ -128,14 +132,18 @@ class GestureRecognizer:
                 if res.multi_hand_landmarks:
                     for hlm in res.multi_hand_landmarks: 
                         gesture, conf = self._recognize_gesture(hlm)
+
+                        # 只在手势发生变化时输出
                         if gesture and gesture != last_gesture:
+                            last_gesture = gesture
+                            last_conf = conf
                             yield {
                                 "type": "gesture",
                                 "gesture": gesture,
                                 "conf": float(conf),
                                 "ts": time.time(),
                             }
-                            last_gesture = gesture  # 更新上一次手势
+
         finally:
             self.cap.release()
             self.hands.close()
