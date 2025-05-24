@@ -196,7 +196,7 @@ def main():
         # 处理头部姿态检测
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         rects = det(gray, 0)
-        head_pose_text = "未检测到人脸"
+        head_pose_text = "Unkown"
         head_pose_color = (0, 0, 255)
         
         if rects:
@@ -213,11 +213,11 @@ def main():
                     if sample_cnt >= CALIB_SECS * FPS_GUESS:
                         pitch0 = pitch_sum / sample_cnt
                         calibrated = True
-                        print(f"📏 基线完成：pitch0={pitch0:.1f}°")
+                        print(f"baseline finish：pitch0={pitch0:.1f}°")
                     continue
                 
                 # 头部姿态检测
-                head_pose_status = "正常"
+                head_pose_status = "normal"
                 head_pose_color = (0, 255, 0)
                 
                 # 摇头检测
@@ -229,7 +229,7 @@ def main():
                     if yaw_flag >= 2:
                         tot_shake += 1
                         yaw_flag = 0
-                        head_pose_status = "摇头"
+                        head_pose_status = "shake"
                         head_pose_color = (0, 0, 255)
                 
                 # 点头检测
@@ -238,7 +238,7 @@ def main():
                 else:
                     if pitch_down_frames >= PITCH_FRAMES:
                         tot_nod += 1
-                        head_pose_status = "点头"
+                        head_pose_status = "nod"
                         head_pose_color = (0, 165, 255)
                     pitch_down_frames = 0
                 
@@ -248,7 +248,7 @@ def main():
                     print(f"Mouth={tot_mouth}  Shake={tot_shake}  Nod={tot_nod}")
                     prev_state = state
                 
-                head_pose_text = f"头部姿态: {head_pose_status} (Pitch: {pitch:.1f}, Yaw: {yaw:.1f})"
+                head_pose_text = f"HeadPose: {head_pose_status} (Pitch: {pitch:.1f}, Yaw: {yaw:.1f})"
 
         # 检测嘴部动作
         if rects:
@@ -333,9 +333,9 @@ def main():
         left_pupil = gaze.pupil_left_coords()
         right_pupil = gaze.pupil_right_coords()
         if left_pupil is not None:
-            cv2.putText(frame, f"左瞳孔: {left_pupil}", (90, 180), cv2.FONT_HERSHEY_DUPLEX, 0.9, (147, 58, 31), 1)
+            cv2.putText(frame, f"left eyes: {left_pupil}", (90, 180), cv2.FONT_HERSHEY_DUPLEX, 0.9, (147, 58, 31), 1)
         if right_pupil is not None:
-            cv2.putText(frame, f"右瞳孔: {right_pupil}", (90, 220), cv2.FONT_HERSHEY_DUPLEX, 0.9, (147, 58, 31), 1)
+            cv2.putText(frame, f"right eyes: {right_pupil}", (90, 220), cv2.FONT_HERSHEY_DUPLEX, 0.9, (147, 58, 31), 1)
             
         # 显示头部姿态信息
         cv2.putText(frame, head_pose_text, (90, 260), cv2.FONT_HERSHEY_DUPLEX, 0.9, head_pose_color, 1)
@@ -345,7 +345,7 @@ def main():
         cv2.putText(frame, count_text, (10, 460), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
 
         # 显示处理后的帧
-        cv2.imshow("组合演示", frame)
+        cv2.imshow("combined_all", frame)
 
         if cv2.waitKey(1) & 0xFF == 27:  # 按ESC退出
             break
