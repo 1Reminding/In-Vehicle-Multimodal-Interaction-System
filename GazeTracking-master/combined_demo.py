@@ -18,7 +18,7 @@ hands = mp_hands.Hands(
 
 # 初始化头部姿态检测
 det = dlib.get_frontal_face_detector()
-pre = dlib.shape_predictor("..\head\shape_predictor_68_face_landmarks.dat")
+pre = dlib.shape_predictor("shape_predictor_68_face_landmarks.dat")
 (lS, lE) = face_utils.FACIAL_LANDMARKS_IDXS["left_eye"]
 (rS, rE) = face_utils.FACIAL_LANDMARKS_IDXS["right_eye"]
 (mS, mE) = face_utils.FACIAL_LANDMARKS_IDXS["mouth"]
