@@ -2,10 +2,6 @@ import cv2
 import mediapipe as mp
 from gaze_tracking import GazeTracking
 import time
-import dlib
-import numpy as np
-from imutils import face_utils
-from scipy.spatial import distance as dist
 
 # 初始化 MediaPipe Hands
 mp_drawing = mp.solutions.drawing_utils
@@ -16,57 +12,11 @@ hands = mp_hands.Hands(
     min_detection_confidence=0.75,
     min_tracking_confidence=0.75)
 
-# 初始化头部姿态检测
-det = dlib.get_frontal_face_detector()
-pre = dlib.shape_predictor("..\head\shape_predictor_68_face_landmarks.dat")
-(lS, lE) = face_utils.FACIAL_LANDMARKS_IDXS["left_eye"]
-(rS, rE) = face_utils.FACIAL_LANDMARKS_IDXS["right_eye"]
-(mS, mE) = face_utils.FACIAL_LANDMARKS_IDXS["mouth"]
-
 def get_y(hand_landmarks, landmark_enum):
     return hand_landmarks.landmark[landmark_enum].y
 
 def get_x(hand_landmarks, landmark_enum):
     return hand_landmarks.landmark[landmark_enum].x
-
-def head_pose(shape, size):
-    """计算头部姿态"""
-    model_pts = np.float32([
-        (0.0,   0.0,   0.0),      # 鼻尖 30
-        (0.0,  -330.0, -65.0),    # 下巴 8
-        (-225.0, 170.0, -135.0),  # 左眼角 36
-        (225.0, 170.0, -135.0),   # 右眼角 45
-        (-150.0, -150.0, -125.0), # 左嘴角 48
-        (150.0, -150.0, -125.0)   # 右嘴角 54
-    ])
-
-    image_pts = np.float32([
-        shape[30],  # 鼻尖
-        shape[8],   # 下巴
-        shape[36],  # 左眼角
-        shape[45],  # 右眼角
-        shape[48],  # 左嘴角
-        shape[54]   # 右嘴角
-    ])
-
-    h, w = size
-    focal = w
-    center = (w / 2, h / 2)
-    camera_mtx = np.array([[focal, 0, center[0]],
-                           [0, focal, center[1]],
-                           [0, 0, 1]], dtype=np.float32)
-    dist_coef = np.zeros((4, 1))
-
-    ok, rvec, tvec = cv2.solvePnP(model_pts, image_pts, camera_mtx,
-                                  dist_coef, flags=cv2.SOLVEPNP_ITERATIVE)
-    if not ok:
-        return None
-
-    rot_mat, _ = cv2.Rodrigues(rvec)
-    pose_mat = cv2.hconcat((rot_mat, tvec))
-    _, _, _, _, _, _, euler = cv2.decomposeProjectionMatrix(pose_mat)
-    pitch, yaw, roll = [x[0] for x in euler]  # degree
-    return yaw, pitch, roll
 
 def recognize_gesture(hand_landmarks):
     # 关键点枚举
@@ -142,9 +92,8 @@ def main():
     state_start_time = time.time()
     previous_distracted = False
     last_gesture = None
-    waiting_for_thumbs_up = False
-    is_distracted = False
-    mouth_open = False  # 添加嘴部状态跟踪
+    waiting_for_thumbs_up = False  # 新增：等待竖起大拇指的状态
+    is_distracted = False  # 添加这行：初始化分心状态变量
     
     # 设置分心阈值（秒）
     DISTRACTION_THRESHOLD = {
@@ -152,32 +101,6 @@ def main():
         "left": 3.0,
         "right": 3.0,
     }
-    
-    # 头部姿态检测相关变量
-    CALIB_SECS = 2               # 基线采样时长
-    FPS_GUESS = 30
-    YAW_THRESH = 10              # °  |Yaw|>阈值 → 左/右
-    PITCH_DELTA = 6              # ° 低头相对下降角
-    PITCH_FRAMES = 1
-    
-    # 基线校准相关变量
-    ear_sum = pitch_sum = 0
-    sample_cnt = 0
-    calibrated = False
-    ear0 = pitch0 = None
-    
-    # 头部姿态相关变量
-    yaw_dir = None
-    yaw_flag = 0
-    pitch_down_frames = 0
-    last_head_time = time.time()
-    
-    # 添加计数器
-    tot_mouth = 0
-    tot_shake = 0
-    tot_nod = 0
-    prev_state = (-1, -1, -1)  # 用于跟踪状态变化
-    last_head_time = time.time()
 
     while True:
         # 读取摄像头帧
@@ -192,82 +115,6 @@ def main():
         # 处理眼神追踪
         gaze.refresh(frame)
         frame = gaze.annotated_frame()
-
-        # 处理头部姿态检测
-        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        rects = det(gray, 0)
-        head_pose_text = "未检测到人脸"
-        head_pose_color = (0, 0, 255)
-        
-        if rects:
-            shape = face_utils.shape_to_np(pre(gray, rects[0]))
-            pose = head_pose(shape, frame.shape[:2])
-            
-            if pose:
-                yaw, pitch, roll = pose
-                
-                # 基线校准
-                if not calibrated:
-                    pitch_sum += pitch
-                    sample_cnt += 1
-                    if sample_cnt >= CALIB_SECS * FPS_GUESS:
-                        pitch0 = pitch_sum / sample_cnt
-                        calibrated = True
-                        print(f"📏 基线完成：pitch0={pitch0:.1f}°")
-                    continue
-                
-                # 头部姿态检测
-                head_pose_status = "正常"
-                head_pose_color = (0, 255, 0)
-                
-                # 摇头检测
-                if abs(yaw) > YAW_THRESH:
-                    cur = 'L' if yaw > 0 else 'R'
-                    if yaw_dir != cur:
-                        yaw_flag += 1
-                        yaw_dir = cur
-                    if yaw_flag >= 2:
-                        tot_shake += 1
-                        yaw_flag = 0
-                        head_pose_status = "摇头"
-                        head_pose_color = (0, 0, 255)
-                
-                # 点头检测
-                if pitch < pitch0 - PITCH_DELTA:
-                    pitch_down_frames += 1
-                else:
-                    if pitch_down_frames >= PITCH_FRAMES:
-                        tot_nod += 1
-                        head_pose_status = "点头"
-                        head_pose_color = (0, 165, 255)
-                    pitch_down_frames = 0
-                
-                # 更新状态并打印
-                state = (tot_mouth, tot_shake, tot_nod)
-                if state != prev_state:
-                    print(f"Mouth={tot_mouth}  Shake={tot_shake}  Nod={tot_nod}")
-                    prev_state = state
-                
-                head_pose_text = f"头部姿态: {head_pose_status} (Pitch: {pitch:.1f}, Yaw: {yaw:.1f})"
-
-        # 检测嘴部动作
-        if rects:
-            shape = face_utils.shape_to_np(pre(gray, rects[0]))
-            mouth = shape[mS:mE]
-            mar = dist.euclidean(mouth[2], mouth[9]) + dist.euclidean(mouth[4], mouth[7])
-            mar = mar / (2.0 * dist.euclidean(mouth[0], mouth[6]))
-            
-            if mar > 0.5:  # 张嘴阈值
-                if not mouth_open:
-                    mouth_open = True
-                    tot_mouth += 1
-                    # 更新状态并打印
-                    state = (tot_mouth, tot_shake, tot_nod)
-                    if state != prev_state:
-                        print(f"Mouth={tot_mouth}  Shake={tot_shake}  Nod={tot_nod}")
-                        prev_state = state
-            else:
-                mouth_open = False
 
         # 处理手势识别
         frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
@@ -336,13 +183,6 @@ def main():
             cv2.putText(frame, f"左瞳孔: {left_pupil}", (90, 180), cv2.FONT_HERSHEY_DUPLEX, 0.9, (147, 58, 31), 1)
         if right_pupil is not None:
             cv2.putText(frame, f"右瞳孔: {right_pupil}", (90, 220), cv2.FONT_HERSHEY_DUPLEX, 0.9, (147, 58, 31), 1)
-            
-        # 显示头部姿态信息
-        cv2.putText(frame, head_pose_text, (90, 260), cv2.FONT_HERSHEY_DUPLEX, 0.9, head_pose_color, 1)
-
-        # 在画面下方显示计数
-        count_text = f"Mouth={tot_mouth}  Shake={tot_shake}  Nod={tot_nod}"
-        cv2.putText(frame, count_text, (10, 460), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
 
         # 显示处理后的帧
         cv2.imshow("组合演示", frame)
