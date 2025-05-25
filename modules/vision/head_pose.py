@@ -14,13 +14,6 @@ def eye_aspect_ratio(eye):
     C = dist.euclidean(eye[0], eye[3])
     return (A + B) / (2.0 * C)
 
-def mouth_aspect_ratio(mouth):
-    """张嘴比例 MAR"""
-    A = np.linalg.norm(mouth[2] - mouth[9])
-    B = np.linalg.norm(mouth[4] - mouth[7])
-    C = np.linalg.norm(mouth[0] - mouth[6])
-    return (A + B) / (2.0 * C)
-
 def head_pose(shape, size):
     """
     solvePnP → 返回 (yaw, pitch, roll) in degree.
@@ -70,27 +63,22 @@ def live_detect():
     # ------------- 常量 -------------
     CALIB_SECS   = 2               # 基线采样时长
     FPS_GUESS    = 30
-    MAR_THRESH   = 0.50            # 张嘴阈值（绝对比例，通常稳定）
     YAW_THRESH   = 10              # °  |Yaw|>阈值 → 左/右
-    # EAR_RATIO    = 0.90            # 眨眼阈值 = ear0 * 0.75
-    # EAR_FRAMES   = 2               # 连续帧
     PITCH_DELTA  = 6              # ° 低头相对下降角
     PITCH_FRAMES = 1
 
     # ------------- 计数器 -------------
-    ear_sum = pitch_sum = 0
+    pitch_sum = 0
     sample_cnt = 0
     calibrated = False
-    ear0 = pitch0 = None
+    pitch0 = None
 
-    # c_eye = tot_eye = 0
-    c_mouth = tot_mouth = 0
     yaw_dir = None
     yaw_flag = 0
     tot_shake = 0
     pitch_down_frames = 0
     tot_nod = 0
-    prev_state = (-1, -1, -1)  # 移除眨眼状态
+    prev_state = (-1, -1)  # 只保留摇头和点头状态
     done = False
 
     # ------------- 模型 -------------
@@ -98,7 +86,6 @@ def live_detect():
     pre = dlib.shape_predictor("shape_predictor_68_face_landmarks.dat")
     (lS, lE) = face_utils.FACIAL_LANDMARKS_IDXS["left_eye"]
     (rS, rE) = face_utils.FACIAL_LANDMARKS_IDXS["right_eye"]
-    (mS, mE) = face_utils.FACIAL_LANDMARKS_IDXS["mouth"]
 
     # ------------- 摄像头 -------------
     cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
@@ -126,16 +113,13 @@ def live_detect():
 
         ear_val = (eye_aspect_ratio(shape[lS:lE]) +
                    eye_aspect_ratio(shape[rS:rE])) / 2.0
-        mar_val = mouth_aspect_ratio(shape[mS:mE])
         pose = head_pose(shape, frame.shape[:2])
 
         # ---------- 基线校准 ----------
         if not calibrated and pose:
-            # ear_sum += ear_val  # 注释掉眨眼校准
             pitch_sum += pose[1]
             sample_cnt += 1
             if sample_cnt >= CALIB_SECS * FPS_GUESS:
-                # ear0   = ear_sum / sample_cnt
                 pitch0 = pitch_sum / sample_cnt
                 calibrated = True
                 print(f"📏 基线完成：pitch0={pitch0:.1f}°")
@@ -143,20 +127,6 @@ def live_detect():
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
             continue
-
-        # ---------------- 眨眼 ---------------- 
-        # 注释掉整个眨眼检测部分
-        # EAR_T = ear0 * EAR_RATIO
-        # c_eye = c_eye + 1 if ear_val < EAR_T else 0
-        # if c_eye >= EAR_FRAMES and ear_val >= EAR_T:
-        #     tot_eye += 1
-
-        # ---------------- 张嘴 ----------------
-        if mar_val > MAR_THRESH:
-            c_mouth += 1
-        elif c_mouth:
-            tot_mouth += 1
-            c_mouth = 0
 
         # ---------------- 摇头 ----------------
         yaw, pitch, _ = pose
@@ -178,14 +148,14 @@ def live_detect():
             pitch_down_frames = 0
 
         # ---------------- 终端输出 ----------------
-        state = (tot_mouth, tot_shake, tot_nod)  # 移除眨眼计数
+        state = (tot_shake, tot_nod)  # 只保留摇头和点头计数
         if state != prev_state:
-            print(f"Mouth={tot_mouth}  Shake={tot_shake}  Nod={tot_nod}", flush=True)
+            print(f"Shake={tot_shake}  Nod={tot_nod}", flush=True)
             prev_state = state
 
         # 在画面下方显示计数
-        text = f"Mouth={tot_mouth}  Shake={tot_shake}  Nod={tot_nod}"
-        cv2.putText(frame, text, (10, 460), cv2.FONT_HERSHEY_SIMPLEX, 
+        text = f"Shake={tot_shake}  Nod={tot_nod}"
+        cv2.putText(frame, text, (10, 460), cv2.FONT_HERSHEY_SIMPLEX,
                     0.7, (0, 255, 0), 2)
 
         cv2.imshow("Live", frame)
