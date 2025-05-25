@@ -28,7 +28,7 @@ PROTOTYPES = {
 }
 
 # -------- 2. 预计算嵌入 --------
-_EMBED_MODEL = SentenceTransformer("all-MiniLM-L6-v2")
+_EMBED_MODEL = SentenceTransformer("modules/audio/models/all-MiniLM-L6-v2")
 _PROTOTYPE_VECS = {
     intent: _EMBED_MODEL.encode(sentences, normalize_embeddings=True)
     for intent, sentences in PROTOTYPES.items()
