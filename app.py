@@ -8,6 +8,7 @@ from modules.audio.intent_classifier import classify
 from modules.vision.gesture_recognizer import GestureRecognizer
 from modules.vision.head_pose_detector import HeadPoseDetector
 from modules.vision.gaze_tracking import GazeTracking
+from modules.vision.camera_manager import get_camera_manager, release_camera_manager
 
 
 def audio_worker():
@@ -20,11 +21,15 @@ def audio_worker():
 
 
 def vision_worker():
+    # 获取公共摄像头管理器
+    camera_manager = get_camera_manager()
+    
+    # 初始化各个模块，传入摄像头管理器
     gr = GestureRecognizer()
     hp = HeadPoseDetector()  # 初始化头部姿态检测器
     gaze = GazeTracking()    # 初始化眼神追踪
     
-    if not gr.cap.isOpened():
+    if not camera_manager.is_opened:
         raise RuntimeError("摄像头无法打开")
 
     last_gesture = None
@@ -39,14 +44,14 @@ def vision_worker():
 
     try:
         while True:
-            ok, frame = gr.cap.read()
+            ok, frame = camera_manager.read_frame()
             if not ok:
                 time.sleep(0.01)
                 continue
 
             # 检查分辨率是否变动
-            current_width = int(gr.cap.get(cv2.CAP_PROP_FRAME_WIDTH))
-            current_height = int(gr.cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+            current_width = camera_manager.width
+            current_height = camera_manager.height
             if gr.image_width != current_width or gr.image_height != current_height:
                 gr.image_width = current_width
                 gr.image_height = current_height
@@ -117,10 +122,14 @@ def vision_worker():
                 stable_start_time = current_time if current_gesture else None
 
     finally:
-        gr.cap.release()
+        # 释放MediaPipe资源，但不释放摄像头（由摄像头管理器统一管理）
         gr.hands.close()
 
 
 if __name__ == "__main__":
-    threading.Thread(target=audio_worker, daemon=True).start()
-    vision_worker()  # 主线程跑摄像头，Ctrl‑C 退出
+    try:
+        threading.Thread(target=audio_worker, daemon=True).start()
+        vision_worker()  # 主线程跑摄像头，Ctrl‑C 退出
+    finally:
+        # 程序退出时释放摄像头资源
+        release_camera_manager()
