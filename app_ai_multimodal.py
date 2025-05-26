@@ -17,7 +17,6 @@ from typing import Dict, Any
 # 导入现有模块
 from modules.audio.recorder import Recorder
 from modules.audio.speech_recognizer import transcribe
-from modules.audio.intent_classifier import classify
 from modules.vision.gesture_recognizer import GestureRecognizer
 from modules.vision.head_pose_detector import HeadPoseDetector
 from modules.vision.gaze_tracking import GazeTracking
@@ -112,20 +111,14 @@ class AIMultimodalApp:
                 if not text or not text.strip():
                     continue
                 
-                # 意图分类
-                intent_result = classify(text)
-                
                 # 更新统计
                 self.stats["speech_inputs"] += 1
                 
                 print(f"🎤 语音识别: '{text}'")
-                if intent_result:
-                    print(f"🎯 意图分类: {intent_result}")
                 
                 # 更新多模态收集器
                 speech_data = {
                     "text": text,
-                    "intent": intent_result.get("intent", "unknown") if intent_result else "unknown"
                 }
                 multimodal_collector.update_speech_data(speech_data)
                 

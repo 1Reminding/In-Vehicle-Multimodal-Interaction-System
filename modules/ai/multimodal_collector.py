@@ -154,7 +154,6 @@ class MultimodalCollector:
         """更新语音数据"""
         with self._lock:
             text = speech_data.get("text", "").strip()
-            intent = speech_data.get("intent", "unknown")
             
             if text:
                 # 推断情感倾向
@@ -162,12 +161,11 @@ class MultimodalCollector:
                 
                 self.current_speech_state = SpeechState(
                     text=text,
-                    intent=intent,
                     emotion=emotion
                 )
                 
                 self.speech_history.append(self.current_speech_state)
-                print(f"🎤 语音更新: '{text}' (意图: {intent}, 情感: {emotion})")
+                print(f"🎤 语音更新: '{text}' , 情感: {emotion})")
                 
                 # 检查是否为确认语音
                 if self.waiting_for_confirmation:
