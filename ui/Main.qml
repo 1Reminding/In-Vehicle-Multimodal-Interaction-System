@@ -14,7 +14,12 @@ ApplicationWindow {
 
     //全局变量
     property string currentMusicImage: "assets/empty_music.png"
+    property string driverState: "assets/safe.png"
     property string musicTitle: "暂无音乐播放"
+    property string weatherTemperature: "???"
+    property string weatherImage: ""
+
+
 
     function setMusicImage(path) {
         //stackView.currentItem.homeMusicImageRef.width += 1  
@@ -57,15 +62,33 @@ ApplicationWindow {
                 break
             case "distract":
                 setMusicImage("assets/album_cover.png")
-                musicTitle = "南开校歌"
+                driverState = "assets/dangerous.png"
                 break
             case "NoticeRoad":
                 setMusicImage("assets/album_cover.png")
-                musicTitle = "南开校歌"
+                driverState = "assets/safe.png"
                 break
             }
         }
     }
+
+    Connections {
+        target: UIBackend
+        function onWeatherUpdated(temp) {
+            console.log("收到天气更新:", temp)
+            weatherTemperature = temp
+            if (temp.indexOf("晴天") !== -1 || temp.indexOf("晴") !== -1) {
+                weatherImage = "assets/sun.png"
+            }
+            if (temp.indexOf("雨") !== -1) {
+                weatherImage = "assets/rain.png"
+            }
+            if (temp.indexOf("云") !== -1) {
+                weatherImage = "assets/cloud.png"
+            }
+        }
+    }
+
 
 
     // 顶部导航栏
@@ -151,20 +174,41 @@ ApplicationWindow {
 
                 // 天气卡片
                 Rectangle {
+                    id: weatherCard
                     radius: 10
                     color: "#2E2E2E"
                     Layout.fillWidth: true
                     Layout.fillHeight: true
                     height: 150
 
-                    ColumnLayout {
+                    // 使用 Item 包裹自由布局
+                    Item {
                         anchors.fill: parent
-                        anchors.margins: 10
-                        spacing: 10
-                        Label { text: "21°C"; font.pixelSize: 24; color: "white" }
-                        Label { text: "多云转晴"; color: "white" }
+
+                        // 左上角天气信息
+                        Column {
+                            anchors.top: parent.top
+                            anchors.left: parent.left
+                            anchors.margins: 10
+                            spacing: 6
+                            Label {
+                                text: weatherTemperature  // 例如 "21°C"
+                                font.pixelSize: 24
+                                color: "white"
+                            }
+                        }
+
+                        // 居中图片
+                        Image {
+                            source: weatherImage
+                            fillMode: Image.PreserveAspectFit
+                            width: parent.width * 0.3
+                            height: width
+                            anchors.centerIn: parent
+                        }
                     }
                 }
+
 
                 // 音乐卡片（可点击）
                 Rectangle {
@@ -233,17 +277,31 @@ ApplicationWindow {
                     Layout.fillHeight: true
                     height: 150
 
-                    ColumnLayout {
-                        anchors.centerIn: parent
-                        spacing: 10
-                        Label { text: "驾驶员状态"; font.pixelSize: 20; color: "white" }
-                        ToolButton {
-                            icon.name: "account-circle"
-                            icon.width: 40
-                            icon.height: 40
+                    // 使用 anchors 和 Layout 结合排布
+                    Item {
+                        anchors.fill: parent
+
+                        // 左上角标题
+                        Label {
+                            text: "驾驶员状态"
+                            font.pixelSize: 20
+                            color: "white"
+                            anchors.top: parent.top
+                            anchors.left: parent.left
+                            anchors.margins: 10
+                        }
+
+                        // 居中的图片
+                        Image {
+                            source: driverState
+                            fillMode: Image.PreserveAspectFit
+                            anchors.centerIn: parent
+                            width: parent.width * 0.4
+                            height: width
                         }
                     }
                 }
+
             }
         }
     }
