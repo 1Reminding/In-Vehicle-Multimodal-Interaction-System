@@ -21,11 +21,34 @@ from modules.vision.gesture_recognizer import GestureRecognizer
 from modules.vision.head_pose_detector import HeadPoseDetector
 from modules.vision.gaze_tracking import GazeTracking
 from modules.vision.camera_manager import get_camera_manager, release_camera_manager
+from modules.actions.action_handler import handle_action
+
 
 # 导入AI模块
 from modules.ai.deepseek_client import deepseek_client, MultimodalInput, AIResponse
 from modules.ai.multimodal_collector import multimodal_collector
 
+import os
+#from PySide6.QtGui import QGuiApplication
+#from PySide6.QtQml import QQmlApplicationEngine
+#from PySide6.QtCore import QUrl, QObject, Signal, Slot
+
+from PyQt5.QtGui     import QGuiApplication
+from PyQt5.QtQml     import QQmlApplicationEngine
+from PyQt5.QtCore   import QUrl, QObject, pyqtSignal, pyqtSlot
+
+
+class UIBackend(QObject):
+    """暴露给 QML 的桥接对象"""
+    commandIssued = pyqtSignal(str)
+
+    @pyqtSlot(str)
+    def requestAction(self, cmd):
+        print(f"🔷 前端请求动作：{cmd}")
+        handle_action(cmd)
+
+# 实例化
+ui_backend = UIBackend()
 
 class AIMultimodalApp:
     """AI增强的多模态交互应用"""
@@ -80,8 +103,14 @@ class AIMultimodalApp:
             try:
                 action_data = json.loads(ai_response.action_code)
                 print(f"   ⚙️ 操作指令: {action_data}")
+                handle_action(action_data)
+                ui_backend.commandIssued.emit(action_data)
+
             except json.JSONDecodeError:
-                print(f"   ⚙️ 操作指令: {ai_response.action_code}")
+                print(f"   ⚙️ 操作指令: {ai_response.action_code}")       
+                handle_action(ai_response.action_code)
+                ui_backend.commandIssued.emit(ai_response.action_code)
+       
             
             # 文本反馈（不使用TTS）
             if ai_response.recommendation_text:
@@ -258,8 +287,8 @@ class AIMultimodalApp:
         print("🚀 启动AI多模态交互系统...")
         
         # 注册信号处理器
-        signal.signal(signal.SIGINT, self.signal_handler)
-        signal.signal(signal.SIGTERM, self.signal_handler)
+        #signal.signal(signal.SIGINT, self.signal_handler)
+        #signal.signal(signal.SIGTERM, self.signal_handler)
         
         self.running = True
         
@@ -302,13 +331,31 @@ def main():
     print("🚗 车载多模态智能交互系统 - AI增强版")
     print("=" * 60)
     
-    app = AIMultimodalApp()
+    # 1. 启动后端多模态服务（在后台线程）
+    backend = AIMultimodalApp()
     
-    try:
-        app.start()
-    except Exception as e:
-        print(f"❌ 系统启动失败: {e}")
-        sys.exit(1)
+    signal.signal(signal.SIGINT, backend.signal_handler)
+    signal.signal(signal.SIGTERM, backend.signal_handler)
+
+    threading.Thread(target=backend.start, daemon=True).start()
+
+
+    # 2. 实例化 UIBackend
+    #ui_backend = UIBackend()
+
+    # 3. 启动 QML 界面
+    app = QGuiApplication(sys.argv)
+    engine = QQmlApplicationEngine()
+    engine.rootContext().setContextProperty("UIBackend", ui_backend)
+
+    qml_path = os.path.join(os.path.dirname(__file__), "ui", "Main.qml")
+    engine.load(QUrl.fromLocalFile(qml_path))
+    if not engine.rootObjects():
+        print("❌ 无法加载 QML 界面，请检查路径或语法")
+        return 1
+
+    # 4. 进入 Qt 事件循环（阻塞）
+    return app.exec_()
 
 
 if __name__ == "__main__":

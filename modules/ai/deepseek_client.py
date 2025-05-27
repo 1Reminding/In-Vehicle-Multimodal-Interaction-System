@@ -101,6 +101,12 @@ class DeepSeekClient:
 }}
 ```
 
+我给你规定一个action_code库，如果识别结果比较符合，请务必从该库中取指令返回，如果没有对应的，你再自行定义action_code：
+打开空调相关的："TurnOnAC"
+播放音乐相关的："PlayMusic"
+司机分心了相关的："distract"
+司机已经注意道路了相关的："NoticeRoad"
+
 ## 安全优先原则
 - 驾驶安全始终是第一优先级
 - 如果检测到分心驾驶，优先提醒注意道路
