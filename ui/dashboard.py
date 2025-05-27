@@ -62,7 +62,7 @@ if __name__ == "__main__":
         sys.exit(-1)
 
     weather_text = fetch_weather("Tianjin")
-    QTimer.singleShot(1000, lambda: ui_backend.weatherUpdated.emit(weather_text))
+    QTimer.singleShot(10, lambda: ui_backend.weatherUpdated.emit(weather_text))
 
     QTimer.singleShot(3000, lambda: ui_backend.weatherUpdated.emit("30°C 多云"))
 
@@ -74,6 +74,8 @@ if __name__ == "__main__":
     QTimer.singleShot(5000, lambda: ui_backend.commandIssued.emit("distract"))
 
     QTimer.singleShot(7000, lambda: ui_backend.commandIssued.emit("NoticeRoad"))
+
+    QTimer.singleShot(3000, lambda: ui_backend.commandIssued.emit("TurnOnAC"))
 
     # 5. 进入 Qt 事件循环
     sys.exit(app.exec_())

@@ -33,14 +33,17 @@ import os
 #from PySide6.QtQml import QQmlApplicationEngine
 #from PySide6.QtCore import QUrl, QObject, Signal, Slot
 
+import requests
 from PyQt5.QtGui     import QGuiApplication
 from PyQt5.QtQml     import QQmlApplicationEngine
-from PyQt5.QtCore   import QUrl, QObject, pyqtSignal, pyqtSlot
+from PyQt5.QtCore   import QUrl, QObject, pyqtSignal, pyqtSlot, QTimer
 
 
 class UIBackend(QObject):
     """暴露给 QML 的桥接对象"""
     commandIssued = pyqtSignal(str)
+
+    weatherUpdated = pyqtSignal(str)
 
     @pyqtSlot(str)
     def requestAction(self, cmd):
@@ -325,6 +328,24 @@ class AIMultimodalApp:
         print("✅ AI多模态交互系统已停止")
 
 
+def fetch_weather(city="Tianjin"):
+    #api_key = "e8527d822a260a90258bbbcf110506e8"
+    url = f"http://api.openweathermap.org/data/2.5/weather?q=Tianjin&appid=e8527d822a260a90258bbbcf110506e8&units=metric&lang=zh_cn"
+
+    try:
+        res = requests.get(url, timeout=5)
+        data = res.json()
+        if res.status_code == 200:
+            temp = data['main']['temp']
+            desc = data['weather'][0]['description']
+            return f"{round(temp)}°C {desc}"
+        else:
+            print("❌ 天气 API 响应失败：", data)
+            return "天气加载失败"
+    except Exception as e:
+        print("❌ 请求天气失败：", e)
+        return "天气异常"
+
 def main():
     """主函数"""
     print("=" * 60)
@@ -353,6 +374,9 @@ def main():
     if not engine.rootObjects():
         print("❌ 无法加载 QML 界面，请检查路径或语法")
         return 1
+
+    weather_text = fetch_weather("Tianjin")
+    QTimer.singleShot(10, lambda: ui_backend.weatherUpdated.emit(weather_text))
 
     # 4. 进入 Qt 事件循环（阻塞）
     return app.exec_()
