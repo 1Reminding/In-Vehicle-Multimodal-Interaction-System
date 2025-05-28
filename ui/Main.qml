@@ -58,9 +58,17 @@ ApplicationWindow {
                 setMusicImage("assets/music.png")
                 musicTitle = "南开校歌"
                 break
+            case "StopMusic":              
+                setMusicImage("assets/empty_music.png")
+                musicTitle = "暂无音乐播放"
+                break
             case "TurnOnAC":
                 acImage = "assets/open.png"
                 acStateText = "23°C  自动"
+                break
+            case "TurnOffAC":
+                acImage = "assets/close.png"
+                acStateText = "关闭"
                 break
             case "distract":
                 driverState = "assets/dangerous.png"

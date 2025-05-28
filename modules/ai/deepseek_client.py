@@ -103,7 +103,9 @@ class DeepSeekClient:
 
 我给你规定一个action_code库，如果识别结果比较符合，请务必从该库中取指令返回，如果没有对应的，你再自行定义action_code：
 打开空调相关的："TurnOnAC"
+关闭空调相关的："TurnOffAC"
 播放音乐相关的："PlayMusic"
+关闭音乐相关的："StopMusic"
 司机分心了相关的："distract"
 司机已经注意道路了相关的："NoticeRoad"
 
