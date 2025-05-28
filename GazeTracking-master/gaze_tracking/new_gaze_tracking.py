@@ -21,12 +21,8 @@ class GazeTracking(object):
         
         # 添加状态维持变量
         self.last_gaze_direction = "center"  # 可能的值: "left", "right", "center"
-        
-        # 为每个方向维护独立的历史记录
-        self.right_gaze_history = []  # 用于存储右视线历史
-        self.left_gaze_history = []   # 用于存储左视线历史
-        self.center_gaze_history = [] # 用于存储中央视线历史
-        self.history_size = 10  # 增加历史记录大小，提高稳定性
+        self.gaze_history = []  # 用于存储最近几帧的视线方向
+        self.history_size = 5  # 历史记录大小
         
         # _face_detector is used to detect faces
         self._face_detector = dlib.get_frontal_face_detector()
@@ -112,13 +108,13 @@ class GazeTracking(object):
             is_right_now = self.horizontal_ratio() <= 0.40  # 原来是0.35，放宽一些
             
             # 更新历史记录
-            self.right_gaze_history.append(1 if is_right_now else 0)
-            if len(self.right_gaze_history) > self.history_size:
-                self.right_gaze_history.pop(0)
+            self.gaze_history.append("right" if is_right_now else "not_right")
+            if len(self.gaze_history) > self.history_size:
+                self.gaze_history.pop(0)
             
             # 只有当历史记录中大部分都是右视线时，才认为是右视线
-            right_ratio = sum(self.right_gaze_history) / len(self.right_gaze_history)
-            return right_ratio >= 0.7  # 70%以上帧检测到右视线，提高阈值增加稳定性
+            right_count = self.gaze_history.count("right")
+            return right_count >= self.history_size * 0.6  # 60%以上帧检测到右视线
     
     def is_left(self):
         """Returns true if the user is looking to the left"""
@@ -127,37 +123,18 @@ class GazeTracking(object):
             is_left_now = self.horizontal_ratio() >= 0.60  # 原来是0.65，放宽一些
             
             # 更新历史记录
-            self.left_gaze_history.append(1 if is_left_now else 0)
-            if len(self.left_gaze_history) > self.history_size:
-                self.left_gaze_history.pop(0)
+            self.gaze_history.append("left" if is_left_now else "not_left")
+            if len(self.gaze_history) > self.history_size:
+                self.gaze_history.pop(0)
             
             # 只有当历史记录中大部分都是左视线时，才认为是左视线
-            left_ratio = sum(self.left_gaze_history) / len(self.left_gaze_history)
-            return left_ratio >= 0.7  # 70%以上帧检测到左视线，提高阈值增加稳定性
+            left_count = self.gaze_history.count("left")
+            return left_count >= self.history_size * 0.6  # 60%以上帧检测到左视线
     
     def is_center(self):
         """Returns true if the user is looking to the center"""
         if self.pupils_located:
-            # 直接判断是否在中心区域
-            ratio = self.horizontal_ratio()
-            is_center_now = (ratio > 0.40 and ratio < 0.60)  # 在左右阈值之间认为是中心
-            
-            # 更新历史记录
-            self.center_gaze_history.append(1 if is_center_now else 0)
-            if len(self.center_gaze_history) > self.history_size:
-                self.center_gaze_history.pop(0)
-            
-            # 计算中心视线的比例
-            center_ratio = sum(self.center_gaze_history) / len(self.center_gaze_history)
-            
-            # 如果左右视线都不明显，且中心视线比例足够高，则认为是中心视线
-            is_right = self.is_right()
-            is_left = self.is_left()
-            
-            if not is_right and not is_left:
-                return center_ratio >= 0.5  # 50%以上帧检测到中心视线
-            else:
-                return False
+            return not self.is_right() and not self.is_left()
 
     def is_blinking(self):
         """Returns true if the user closes his eyes"""
