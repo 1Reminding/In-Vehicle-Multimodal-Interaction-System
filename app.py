@@ -28,6 +28,9 @@ from modules.actions.action_handler import handle_action
 from modules.ai.deepseek_client import deepseek_client, MultimodalInput, AIResponse
 from modules.ai.multimodal_collector import multimodal_collector
 
+# 导入系统管理模块
+from modules.system.system_manager import system_manager
+
 import os
 #from PySide6.QtGui import QGuiApplication
 #from PySide6.QtQml import QQmlApplicationEngine
@@ -74,12 +77,16 @@ class AIMultimodalApp:
         # 设置多模态数据回调
         multimodal_collector.set_callback(self.on_multimodal_data_ready)
         
+        # 启动系统管理会话
+        system_manager.start_session()
+        
         print("🚀 AI多模态交互系统初始化完成")
         print("📋 功能说明:")
         print("   - 眼动偏离超过3秒触发AI分析")
         print("   - 语音输入立即触发AI分析")
         print("   - 手势识别触发AI分析")
         print("   - AI分析结果通过文本显示")
+        print("   - 集成系统管理功能（用户配置、日志记录、权限管理）")
         print("   - 按 Ctrl+C 退出系统")
     
     def on_multimodal_data_ready(self, multimodal_input: MultimodalInput):
@@ -92,10 +99,12 @@ class AIMultimodalApp:
         
         # 更新统计
         self.stats["ai_requests"] += 1
+        start_time = time.time()
         
         try:
             # 调用DeepSeek API进行分析
             ai_response = deepseek_client.analyze_multimodal_data(multimodal_input)
+            processing_time = time.time() - start_time
             
             print(f"\n🧠 AI分析结果:")
             print(f"   📋 推荐操作: {ai_response.recommendation_text}")
@@ -106,27 +115,93 @@ class AIMultimodalApp:
             try:
                 action_data = json.loads(ai_response.action_code)
                 print(f"   ⚙️ 操作指令: {action_data}")
-                handle_action(action_data)
-                ui_backend.commandIssued.emit(action_data)
-
             except json.JSONDecodeError:
-                print(f"   ⚙️ 操作指令: {ai_response.action_code}")       
-                handle_action(ai_response.action_code)
-                ui_backend.commandIssued.emit(ai_response.action_code)
-       
+                print(f"   ⚙️ 操作指令: {ai_response.action_code}")
             
-            # 文本反馈（不使用TTS）
-            if ai_response.recommendation_text:
-                print(f"💬 系统建议: {ai_response.recommendation_text}")
+            # 通过系统管理器处理交互
+            interaction_data = {
+                "modality": "multimodal",
+                "type": "ai_analysis",
+                "category": self._get_interaction_category(multimodal_input),
+                "gaze_data": multimodal_input.gaze_data,
+                "gesture_data": multimodal_input.gesture_data,
+                "speech_data": multimodal_input.speech_data
+            }
             
-            # 添加到对话历史
-            deepseek_client.add_to_conversation_history(multimodal_input, ai_response)
+            ai_response_data = {
+                "confidence": ai_response.confidence,
+                "recommendation": ai_response.recommendation_text,
+                "reasoning": ai_response.reasoning,
+                "action_code": ai_response.action_code
+            }
             
-            self.stats["successful_responses"] += 1
+            system_result = system_manager.process_multimodal_interaction(
+                interaction_data=interaction_data,
+                ai_response=ai_response_data,
+                processing_time=processing_time,
+                success=True
+            )
+            
+            if system_result["success"]:
+                # 解析操作指令并执行
+                try:
+                    action_data = json.loads(ai_response.action_code)
+                    print(f"   ⚙️ 操作指令: {action_data}")
+                    handle_action(action_data)
+                    ui_backend.commandIssued.emit(action_data)
+
+                except json.JSONDecodeError:
+                    print(f"   ⚙️ 操作指令: {ai_response.action_code}")       
+                    handle_action(ai_response.action_code)
+                    ui_backend.commandIssued.emit(ai_response.action_code)
+                
+                # 文本反馈（不使用TTS）
+                if ai_response.recommendation_text:
+                    print(f"💬 系统建议: {ai_response.recommendation_text}")
+                
+                # 添加到对话历史
+                deepseek_client.add_to_conversation_history(multimodal_input, ai_response)
+                
+                self.stats["successful_responses"] += 1
+            else:
+                print(f"🚫 {system_result['message']}")
+                if system_result.get("suggestions"):
+                    print(f"💡 建议: {', '.join(system_result['suggestions'])}")
             
         except Exception as e:
+            processing_time = time.time() - start_time
             print(f"❌ AI分析失败: {e}")
             print("💬 系统提示: 抱歉，系统暂时无法处理您的请求")
+            
+            # 记录错误到系统管理器
+            interaction_data = {
+                "modality": "multimodal",
+                "type": "ai_analysis",
+                "category": "system",
+                "error": str(e)
+            }
+            
+            system_manager.process_multimodal_interaction(
+                interaction_data=interaction_data,
+                processing_time=processing_time,
+                success=False,
+                error_message=str(e)
+            )
+    
+    def _get_interaction_category(self, multimodal_input: MultimodalInput) -> str:
+        """根据多模态输入推断交互类别"""
+        text = multimodal_input.speech_data.get('text', '').lower()
+        
+        if any(word in text for word in ['导航', '目的地', '路线', '地图']):
+            return 'navigation'
+        elif any(word in text for word in ['音乐', '歌曲', '播放', '暂停']):
+            return 'music'
+        elif any(word in text for word in ['温度', '空调', '暖气', '制冷']):
+            return 'climate'
+        elif any(word in text for word in ['电话', '通话', '联系', '短信']):
+            return 'communication'
+        else:
+            return 'system'
     
     def audio_worker(self):
         """音频工作线程"""
@@ -318,6 +393,9 @@ class AIMultimodalApp:
         # 等待线程结束
         if self.audio_thread and self.audio_thread.is_alive():
             self.audio_thread.join(timeout=2.0)
+        
+        # 结束系统管理会话
+        system_manager.end_session()
         
         # 打印最终状态
         self.print_status()
