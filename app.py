@@ -17,9 +17,9 @@ from typing import Dict, Any
 # 导入现有模块
 from modules.audio.recorder import Recorder
 from modules.audio.speech_recognizer import transcribe
-from modules.vision.gesture_recognizer import GestureRecognizer
-from modules.vision.head_pose_detector import HeadPoseDetector
-from modules.vision.gaze_tracking import GazeTracking
+from modules.vision.gesture.gesture_recognizer import GestureRecognizer
+from modules.vision.head.head_pose_detector import HeadPoseDetector
+from modules.vision.gaze.gaze_tracking import GazeTracking
 from modules.vision.camera_manager import get_camera_manager, release_camera_manager
 from modules.actions.action_handler import handle_action
 

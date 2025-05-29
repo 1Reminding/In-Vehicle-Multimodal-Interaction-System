@@ -18,7 +18,12 @@ class GazeTracking(object):
         self.eye_left = None
         self.eye_right = None
         self.calibration = Calibration()
-
+        
+        # 添加状态维持变量
+        self.last_gaze_direction = "center"  # 可能的值: "left", "right", "center"
+        self.gaze_history = []  # 用于存储最近几帧的视线方向
+        self.history_size = 5  # 历史记录大小
+        
         # _face_detector is used to detect faces
         self._face_detector = dlib.get_frontal_face_detector()
 
@@ -99,23 +104,47 @@ class GazeTracking(object):
     def is_right(self):
         """Returns true if the user is looking to the right"""
         if self.pupils_located:
-            return self.horizontal_ratio() <= 0.35
-
+            # 调整阈值，使其更容易检测到右视线
+            is_right_now = self.horizontal_ratio() <= 0.40  # 原来是0.35，放宽一些
+            
+            # 更新历史记录
+            self.gaze_history.append("right" if is_right_now else "not_right")
+            if len(self.gaze_history) > self.history_size:
+                self.gaze_history.pop(0)
+            
+            # 只有当历史记录中大部分都是右视线时，才认为是右视线
+            right_count = self.gaze_history.count("right")
+            return right_count >= self.history_size * 0.6  # 60%以上帧检测到右视线
+    
     def is_left(self):
         """Returns true if the user is looking to the left"""
         if self.pupils_located:
-            return self.horizontal_ratio() >= 0.65
-
+            # 调整阈值，使其更容易检测到左视线
+            is_left_now = self.horizontal_ratio() >= 0.60  # 原来是0.65，放宽一些
+            
+            # 更新历史记录
+            self.gaze_history.append("left" if is_left_now else "not_left")
+            if len(self.gaze_history) > self.history_size:
+                self.gaze_history.pop(0)
+            
+            # 只有当历史记录中大部分都是左视线时，才认为是左视线
+            left_count = self.gaze_history.count("left")
+            return left_count >= self.history_size * 0.6  # 60%以上帧检测到左视线
+    
     def is_center(self):
         """Returns true if the user is looking to the center"""
         if self.pupils_located:
-            return self.is_right() is not True and self.is_left() is not True
+            return not self.is_right() and not self.is_left()
 
     def is_blinking(self):
         """Returns true if the user closes his eyes"""
-        if self.pupils_located:
+        if not self.pupils_located:
+            # 如果无法定位瞳孔，直接认为是眨眼
+            return True
+        else:
+            # 如果能够定位瞳孔，则根据眨眼比率判断
             blinking_ratio = (self.eye_left.blinking + self.eye_right.blinking) / 2
-            return blinking_ratio > 3.8
+            return blinking_ratio > 5.2  # 保持原有阈值
 
     def annotated_frame(self):
         """Returns the main frame with pupils highlighted"""
