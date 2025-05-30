@@ -20,11 +20,19 @@ class InteractionLogger:
     def __init__(self, log_dir: str = "data/logs"):
         self.log_dir = log_dir
         self.db_path = os.path.join(log_dir, "interactions.db")
+        
+        # 可视化日志文件路径
+        self.readable_log_path = os.path.join(log_dir, "interactions_readable.json")
+        self.daily_log_path = os.path.join(log_dir, f"interactions_{datetime.now().strftime('%Y%m%d')}.json")
+        
         self.lock = threading.Lock()
         self.db_available = False  # 数据库可用标志
         
         # 确保日志目录存在
         os.makedirs(log_dir, exist_ok=True)
+        
+        # 初始化可视化日志文件
+        self._init_readable_logs()
         
         # 初始化数据库
         try:
@@ -34,8 +42,50 @@ class InteractionLogger:
             print("📊 交互日志记录器初始化完成")
         except Exception as e:
             print(f"❌ 交互日志记录器初始化失败: {e}")
-            print("⚠️ 将在无数据库模式下运行")
+            print("⚠️ 将在无数据库模式下运行，但可视化日志仍可用")
             self.db_available = False
+    
+    def _init_readable_logs(self):
+        """初始化可视化日志文件"""
+        try:
+            # 如果今日日志文件不存在，创建一个空的JSON数组
+            if not os.path.exists(self.daily_log_path):
+                with open(self.daily_log_path, 'w', encoding='utf-8') as f:
+                    json.dump([], f, ensure_ascii=False, indent=2)
+                print(f"📄 创建可视化日志文件: {self.daily_log_path}")
+        except Exception as e:
+            print(f"⚠️ 初始化可视化日志失败: {e}")
+    
+    def _append_to_readable_log(self, log_entry: Dict[str, Any]):
+        """添加条目到可视化日志文件"""
+        try:
+            # 读取现有日志
+            daily_logs = []
+            if os.path.exists(self.daily_log_path):
+                try:
+                    with open(self.daily_log_path, 'r', encoding='utf-8') as f:
+                        daily_logs = json.load(f)
+                except (json.JSONDecodeError, FileNotFoundError):
+                    daily_logs = []
+            
+            # 添加新条目
+            daily_logs.append(log_entry)
+            
+            # 写回文件
+            with open(self.daily_log_path, 'w', encoding='utf-8') as f:
+                json.dump(daily_logs, f, ensure_ascii=False, indent=2)
+            
+            # 同时更新总日志文件（最近100条）
+            if len(daily_logs) > 100:
+                recent_logs = daily_logs[-100:]  # 只保留最近100条
+            else:
+                recent_logs = daily_logs
+            
+            with open(self.readable_log_path, 'w', encoding='utf-8') as f:
+                json.dump(recent_logs, f, ensure_ascii=False, indent=2)
+                
+        except Exception as e:
+            print(f"⚠️ 写入可视化日志失败: {e}")
     
     def _init_database(self):
         """初始化SQLite数据库"""
@@ -146,19 +196,39 @@ class InteractionLogger:
                        context_data: Optional[Dict[str, Any]] = None):
         """记录交互日志"""
         
+        # 计算置信度
+        confidence = None
+        if ai_response and 'confidence' in ai_response:
+            confidence = ai_response['confidence']
+        
+        # 准备日志条目（无论数据库是否可用都记录到可视化日志）
+        log_entry = {
+            "timestamp": datetime.now().isoformat(),
+            "user_id": user_id,
+            "session_id": session_id,
+            "interaction_type": interaction_type,
+            "modality": modality,
+            "input_data": input_data,
+            "ai_response": ai_response,
+            "confidence": confidence,
+            "processing_time": processing_time,
+            "success": success,
+            "error_message": error_message,
+            "context_data": context_data
+        }
+        
+        # 记录到可视化日志文件
+        self._append_to_readable_log(log_entry)
+        
+        # 如果数据库可用，也记录到数据库
         if not self.db_available:
-            print("⚠️ 数据库不可用，跳过交互日志记录")
+            print("⚠️ 数据库不可用，但已记录到可视化日志文件")
             return
         
         try:
             with self.lock:
                 with sqlite3.connect(self.db_path, timeout=5.0) as conn:
                     cursor = conn.cursor()
-                    
-                    # 计算置信度
-                    confidence = None
-                    if ai_response and 'confidence' in ai_response:
-                        confidence = ai_response['confidence']
                     
                     cursor.execute("""
                         INSERT INTO interaction_logs 
@@ -167,7 +237,7 @@ class InteractionLogger:
                          success, error_message, context_data)
                         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                     """, (
-                        datetime.now().isoformat(),
+                        log_entry["timestamp"],
                         user_id,
                         session_id,
                         interaction_type,
@@ -184,7 +254,7 @@ class InteractionLogger:
                     conn.commit()
                     
         except Exception as e:
-            print(f"❌ 记录交互日志失败: {e}")
+            print(f"❌ 记录交互日志到数据库失败: {e}，但已记录到可视化日志文件")
     
     def log_performance_metric(self, 
                               metric_name: str, 

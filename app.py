@@ -4,7 +4,7 @@
 车载多模态智能交互系统 - AI增强版
 
 集成DeepSeek API进行智能多模态融合和语音反馈
-集成完整的系统管理功能：用户配置、权限管理、交互日志
+集成交互日志记录和基础用户配置功能
 """
 
 import time
@@ -28,9 +28,8 @@ from modules.actions.action_handler import handle_action
 from modules.ai.deepseek_client import deepseek_client, MultimodalInput, AIResponse
 from modules.ai.multimodal_collector import multimodal_collector
 
-# 导入系统管理模块
+# 导入系统管理模块（仅用于交互日志）
 from modules.system.system_manager import system_manager
-from modules.system import UserRole, SafetyContext, PermissionLevel
 
 import os
 import requests
@@ -44,9 +43,8 @@ class UIBackend(QObject):
     commandIssued = pyqtSignal(str)
     weatherUpdated = pyqtSignal(str)
     
-    # 新增系统管理相关信号
+    # 系统状态信号
     userStatusUpdated = pyqtSignal(str)  # 用户状态更新
-    permissionDenied = pyqtSignal(str)   # 权限被拒绝
     systemAlert = pyqtSignal(str)        # 系统警告
 
     @pyqtSlot(str)
@@ -56,23 +54,13 @@ class UIBackend(QObject):
     
     @pyqtSlot(str)
     def setCurrentUser(self, user_id):
-        """设置当前用户"""
+        """设置当前用户（简化版）"""
         print(f"👤 切换用户：{user_id}")
         if system_manager.user_config.load_user(user_id):
             system_manager.start_session(user_id)
             self.userStatusUpdated.emit(f"用户 {user_id} 已登录")
         else:
             self.userStatusUpdated.emit(f"用户 {user_id} 不存在")
-    
-    @pyqtSlot(str)
-    def setVehicleState(self, state):
-        """设置车辆状态"""
-        print(f"🚗 设置车辆状态：{state}")
-        is_driving = state in ["driving", "emergency"]
-        is_emergency = state == "emergency"
-        
-        result = system_manager.set_vehicle_state(is_driving, is_emergency)
-        self.systemAlert.emit(f"车辆状态：{result['new_context']}")
 
 # 使用基本的UI后端
 ui_backend = UIBackend()
@@ -85,26 +73,22 @@ class AIMultimodalApp:
         self.audio_thread = None
         self.vision_thread = None
         
-        # 当前用户信息
+        # 当前用户信息（简化）
         self.current_user_id = None
-        self.current_user_role = UserRole.DRIVER  # 默认驾驶员
         
-        # 统计信息
         self.stats = {
             "ai_requests": 0,
             "successful_responses": 0,
             "speech_inputs": 0,
             "gesture_detections": 0,
             "gaze_changes": 0,
-            "permission_checks": 0,
-            "permission_denials": 0,
             "start_time": time.time()
         }
         
         # 设置多模态数据回调
         multimodal_collector.set_callback(self.on_multimodal_data_ready)
         
-        # 初始化系统管理
+        # 初始化系统管理（仅用于交互日志）
         self._initialize_system_management()
         
         print("🚀 AI多模态交互系统初始化完成")
@@ -113,22 +97,21 @@ class AIMultimodalApp:
         print("   - 语音输入立即触发AI分析")
         print("   - 手势识别触发AI分析")
         print("   - AI分析结果通过文本显示")
-        print("   - 集成系统管理功能（用户配置、日志记录、权限管理）")
+        print("   - 自动记录所有交互日志用于分析优化")
         print("   - 按 Ctrl+C 退出系统")
     
     def _initialize_system_management(self):
-        """初始化系统管理功能"""
+        """初始化系统管理功能（简化版，主要用于交互日志）"""
         try:
-            # 设置默认用户（如果没有用户则创建默认驾驶员）
-            default_user_id = "default_driver"
+            # 设置默认用户（如果没有用户则创建默认用户）
+            default_user_id = "default_user"
             if not system_manager.user_config.load_user(default_user_id):
                 print(f"📋 创建默认用户：{default_user_id}")
-                system_manager.create_user_profile(default_user_id, "默认驾驶员", "driver")
+                system_manager.create_user_profile(default_user_id, "默认用户", "driver")
             
             # 加载默认用户并开始会话
             if system_manager.user_config.load_user(default_user_id):
                 self.current_user_id = default_user_id
-                self.current_user_role = UserRole.DRIVER
                 system_manager.start_session(default_user_id)
                 print(f"✅ 系统管理初始化完成，当前用户：{default_user_id}")
             else:
@@ -138,68 +121,24 @@ class AIMultimodalApp:
             print(f"❌ 系统管理初始化失败：{e}")
             print("⚠️ 系统将以基础模式运行，部分功能可能受限")
     
-    def _check_interaction_permission(self, interaction_category: str) -> tuple[bool, str]:
-        """检查交互权限"""
-        if not self.current_user_id:
-            return False, "未登录用户"
-        
-        self.stats["permission_checks"] += 1
-        
-        # 检查权限
-        permission = system_manager.permission.check_permission(
-            self.current_user_role, 
-            interaction_category, 
-            PermissionLevel.WRITE
-        )
-        
-        if not permission:
-            self.stats["permission_denials"] += 1
-            
-            # 获取当前安全上下文
-            current_context = system_manager.permission.safety_context
-            context_name = {
-                SafetyContext.PARKED: "停车",
-                SafetyContext.DRIVING: "行驶", 
-                SafetyContext.EMERGENCY: "紧急"
-            }.get(current_context, "未知")
-            
-            role_name = "驾驶员" if self.current_user_role == UserRole.DRIVER else "乘客"
-            
-            denial_message = f"{role_name}在{context_name}状态下无权限执行{interaction_category}操作"
-            
-            # 发送权限拒绝信号到UI
-            ui_backend.permissionDenied.emit(denial_message)
-            
-            return False, denial_message
-        
-        return True, "权限验证通过"
-    
-    def _get_personalized_settings(self) -> Dict[str, Any]:
-        """获取个性化设置"""
+    def _get_simple_user_settings(self) -> Dict[str, Any]:
+        """获取简化的用户设置（主要用于交互日志记录）"""
         if not self.current_user_id:
             return {}
         
         try:
-            # 获取用户交互统计
+            # 获取基础用户统计
             user_stats = system_manager.user_config.get_interaction_stats()
             
-            # 获取用户偏好（使用get_preference方法）
-            voice_speed = system_manager.user_config.get_preference('accessibility.voice_speed', 1.0)
-            brief_responses = system_manager.user_config.get_preference('ui_preferences.brief_responses', False)
-            
             return {
+                "user_id": self.current_user_id,
                 "interaction_stats": user_stats,
-                "preferences": {
-                    "voice_speed": voice_speed,
-                    "brief_responses": brief_responses
-                },
                 "most_used_gesture": user_stats.get("most_used_gesture"),
-                "most_used_voice_command": user_stats.get("most_used_voice_command"),
-                "preferred_response_speed": voice_speed
+                "most_used_voice_command": user_stats.get("most_used_voice_command")
             }
         except Exception as e:
-            print(f"⚠️ 获取个性化设置失败：{e}")
-            return {}
+            print(f"⚠️ 获取用户设置失败：{e}")
+            return {"user_id": self.current_user_id}
 
     def on_multimodal_data_ready(self, multimodal_input: MultimodalInput):
         """处理多模态数据就绪事件"""
@@ -212,35 +151,8 @@ class AIMultimodalApp:
         # 确定交互类别
         interaction_category = self._get_interaction_category(multimodal_input)
         
-        # 权限检查
-        permission_granted, permission_message = self._check_interaction_permission(interaction_category)
-        
-        if not permission_granted:
-            print(f"🚫 权限被拒绝：{permission_message}")
-            
-            # 记录权限拒绝的交互
-            interaction_data = {
-                "modality": "multimodal",
-                "type": "permission_denied",
-                "category": interaction_category,
-                "gaze_data": multimodal_input.gaze_data,
-                "gesture_data": multimodal_input.gesture_data,
-                "speech_data": multimodal_input.speech_data,
-                "user_id": self.current_user_id,
-                "user_role": self.current_user_role.value
-            }
-            
-            system_manager.process_multimodal_interaction(
-                interaction_data=interaction_data,
-                processing_time=0.1,
-                success=False,
-                error_message=permission_message
-            )
-            
-            return
-        
-        # 获取个性化设置
-        personalized_settings = self._get_personalized_settings()
+        # 获取用户设置
+        user_settings = self._get_simple_user_settings()
         
         # 更新统计
         self.stats["ai_requests"] += 1
@@ -263,7 +175,7 @@ class AIMultimodalApp:
             except json.JSONDecodeError:
                 print(f"   ⚙️ 操作指令: {ai_response.action_code}")
             
-            # 通过系统管理器处理交互
+            # 记录交互日志
             interaction_data = {
                 "modality": "multimodal",
                 "type": "ai_analysis",
@@ -272,8 +184,7 @@ class AIMultimodalApp:
                 "gesture_data": multimodal_input.gesture_data,
                 "speech_data": multimodal_input.speech_data,
                 "user_id": self.current_user_id,
-                "user_role": self.current_user_role.value,
-                "personalized_settings": personalized_settings
+                "user_settings": user_settings
             }
             
             ai_response_data = {
@@ -283,6 +194,7 @@ class AIMultimodalApp:
                 "action_code": ai_response.action_code
             }
             
+            # 通过系统管理器记录交互日志
             system_result = system_manager.process_multimodal_interaction(
                 interaction_data=interaction_data,
                 ai_response=ai_response_data,
@@ -291,7 +203,7 @@ class AIMultimodalApp:
             )
             
             if system_result["success"]:
-                print(f"✅ 交互记录成功 - 会话ID: {system_result.get('session_id')}")
+                print(f"✅ 交互日志记录成功 - 会话ID: {system_result.get('session_id')}")
                 
                 # 解析操作指令并执行
                 try:
@@ -305,38 +217,29 @@ class AIMultimodalApp:
                     handle_action(ai_response.action_code)
                     ui_backend.commandIssued.emit(ai_response.action_code)
                 
-                # 文本反馈（根据个性化设置调整）
+                # 文本反馈
                 if ai_response.recommendation_text:
-                    feedback_text = ai_response.recommendation_text
-                    
-                    # 根据用户偏好调整反馈
-                    if personalized_settings.get("preferences", {}).get("brief_responses", False):
-                        feedback_text = feedback_text[:50] + "..." if len(feedback_text) > 50 else feedback_text
-                    
-                    print(f"💬 系统建议: {feedback_text}")
+                    print(f"💬 系统建议: {ai_response.recommendation_text}")
                 
                 # 添加到对话历史
                 deepseek_client.add_to_conversation_history(multimodal_input, ai_response)
                 
                 self.stats["successful_responses"] += 1
             else:
-                print(f"🚫 {system_result['message']}")
-                if system_result.get("suggestions"):
-                    print(f"💡 建议: {', '.join(system_result['suggestions'])}")
+                print(f"🚫 交互日志记录失败: {system_result['message']}")
             
         except Exception as e:
             processing_time = time.time() - start_time
             print(f"❌ AI分析失败: {e}")
             print("💬 系统提示: 抱歉，系统暂时无法处理您的请求")
             
-            # 记录错误到系统管理器
+            # 记录错误到交互日志
             interaction_data = {
                 "modality": "multimodal",
                 "type": "ai_analysis_error",
                 "category": interaction_category,
                 "error": str(e),
-                "user_id": self.current_user_id,
-                "user_role": self.current_user_role.value if self.current_user_role else None
+                "user_id": self.current_user_id
             }
             
             system_manager.process_multimodal_interaction(
@@ -364,7 +267,7 @@ class AIMultimodalApp:
             return 'system'
     
     def switch_user(self, user_id: str) -> bool:
-        """切换用户"""
+        """切换用户（简化版）"""
         try:
             # 结束当前会话
             if self.current_user_id:
@@ -374,14 +277,10 @@ class AIMultimodalApp:
             if system_manager.user_config.load_user(user_id):
                 self.current_user_id = user_id
                 
-                # 获取用户角色
-                user_role = system_manager.user_config.get_user_role()
-                self.current_user_role = UserRole.DRIVER if user_role == "driver" else UserRole.PASSENGER
-                
                 # 开始新会话
                 system_manager.start_session(user_id)
                 
-                print(f"✅ 用户切换成功：{user_id} ({self.current_user_role.value})")
+                print(f"✅ 用户切换成功：{user_id}")
                 ui_backend.userStatusUpdated.emit(f"当前用户：{user_id}")
                 
                 return True
@@ -394,32 +293,6 @@ class AIMultimodalApp:
             print(f"❌ 用户切换失败：{e}")
             ui_backend.userStatusUpdated.emit(f"用户切换失败：{e}")
             return False
-    
-    def set_vehicle_state(self, is_driving: bool, is_emergency: bool = False):
-        """设置车辆状态"""
-        try:
-            result = system_manager.set_vehicle_state(is_driving, is_emergency)
-            
-            state_name = {
-                SafetyContext.PARKED: "停车",
-                SafetyContext.DRIVING: "行驶",
-                SafetyContext.EMERGENCY: "紧急"
-            }.get(result["new_context"], "未知")
-            
-            print(f"🚗 车辆状态更新：{state_name}")
-            ui_backend.systemAlert.emit(f"车辆状态：{state_name}")
-            
-            # 显示安全限制
-            restrictions = result.get("restrictions", {})
-            if restrictions.get("restricted_actions"):
-                print(f"🔒 受限操作：{', '.join(restrictions['restricted_actions'])}")
-            
-            return result
-            
-        except Exception as e:
-            print(f"❌ 车辆状态设置失败：{e}")
-            ui_backend.systemAlert.emit(f"状态设置失败：{e}")
-            return None
     
     def audio_worker(self):
         """音频工作线程"""
@@ -568,8 +441,6 @@ class AIMultimodalApp:
         print(f"   🎤 语音输入: {self.stats['speech_inputs']}")
         print(f"   🖐 手势检测: {self.stats['gesture_detections']}")
         print(f"   👁 眼动变化: {self.stats['gaze_changes']}")
-        print(f"   🔒 权限检查: {self.stats['permission_checks']}")
-        print(f"   🚫 权限拒绝: {self.stats['permission_denials']}")
         
         # 多模态收集器状态
         collector_status = multimodal_collector.get_status()
@@ -577,21 +448,16 @@ class AIMultimodalApp:
         
         # 系统管理状态
         if self.current_user_id:
-            print(f"   👤 当前用户: {self.current_user_id} ({self.current_user_role.value})")
+            print(f"   👤 当前用户: {self.current_user_id}")
             
-            # 获取系统管理统计
+            # 获取交互日志统计
             try:
                 system_analytics = system_manager.get_system_analytics(days=1)
                 print(f"   📈 今日交互: {system_analytics.get('total_interactions', 0)} 次")
                 print(f"   📊 成功率: {system_analytics.get('success_rate', 0):.1%}")
                 
-                # 权限使用统计
-                permission_stats = system_manager.permission.get_permission_report(days=1)
-                print(f"   🔐 权限检查: {permission_stats.get('total_checks', 0)} 次")
-                print(f"   ⛔ 权限拒绝: {permission_stats.get('denied_requests', 0)} 次")
-                
             except Exception as e:
-                print(f"   ⚠️ 系统管理统计获取失败: {e}")
+                print(f"   ⚠️ 系统统计获取失败: {e}")
         else:
             print(f"   👤 当前用户: 未登录")
     
@@ -630,10 +496,6 @@ class AIMultimodalApp:
         """启动应用"""
         print("🚀 启动AI多模态交互系统...")
         
-        # 注册信号处理器
-        #signal.signal(signal.SIGINT, self.signal_handler)
-        #signal.signal(signal.SIGTERM, self.signal_handler)
-        
         self.running = True
         
         # 启动音频线程
@@ -671,22 +533,22 @@ class AIMultimodalApp:
         # 打印最终状态和系统分析
         self.print_status()
         
-        # 显示系统管理总结
+        # 显示交互日志总结
         try:
-            print(f"\n📈 系统管理总结:")
+            print(f"\n📈 交互日志总结:")
             analytics = system_manager.get_system_analytics(days=1)
             print(f"   📊 今日总交互: {analytics.get('total_interactions', 0)} 次")
             print(f"   ✅ 成功率: {analytics.get('success_rate', 0):.1%}")
             print(f"   ⏱️ 平均响应时间: {analytics.get('avg_response_time', 0):.2f}秒")
             
-            # 用户行为分析
+            # 用户交互习惯分析
             if self.current_user_id:
                 user_stats = system_manager.user_config.get_interaction_stats()
                 print(f"   🖐 最常用手势: {user_stats.get('most_used_gesture', 'none')}")
                 print(f"   🎤 最常用语音指令: {user_stats.get('most_used_voice_command', 'none')}")
                 
         except Exception as e:
-            print(f"⚠️ 系统管理总结获取失败: {e}")
+            print(f"⚠️ 交互日志总结获取失败: {e}")
         
         # 关闭资源
         release_camera_manager()
@@ -702,9 +564,9 @@ def get_app_instance():
     global app_instance
     return app_instance
 
-# 为UI提供的系统管理接口
+# 为UI提供的系统管理接口（简化版）
 class SystemManagementAPI:
-    """系统管理API，供UI调用"""
+    """系统管理API，供UI调用（简化版，主要用于交互日志）"""
     
     @staticmethod
     def get_current_user():
@@ -712,13 +574,11 @@ class SystemManagementAPI:
         app = get_app_instance()
         if app and app.current_user_id:
             try:
-                user_role = system_manager.user_config.get_user_role()
                 user_name = system_manager.user_config.get_preference('user_info.name', '未知')
                 last_login = system_manager.user_config.get_preference('user_info.last_login', '未知')
                 
                 return {
                     "user_id": app.current_user_id,
-                    "role": app.current_user_role.value,
                     "name": user_name,
                     "last_login": last_login
                 }
@@ -743,28 +603,10 @@ class SystemManagementAPI:
         return False
     
     @staticmethod
-    def set_vehicle_state(state: str):
-        """设置车辆状态"""
-        app = get_app_instance()
-        if app:
-            is_driving = state in ["driving", "emergency"]
-            is_emergency = state == "emergency"
-            return app.set_vehicle_state(is_driving, is_emergency)
-        return None
-    
-    @staticmethod
     def get_interaction_stats(days: int = 7):
         """获取交互统计"""
         try:
             return system_manager.logger.get_interaction_stats(days=days)
-        except Exception as e:
-            return {"error": str(e)}
-    
-    @staticmethod
-    def get_permission_report(days: int = 7):
-        """获取权限报告"""
-        try:
-            return system_manager.permission.get_permission_report(days=days)
         except Exception as e:
             return {"error": str(e)}
 
@@ -792,7 +634,7 @@ def main():
     
     print("=" * 60)
     print("🚗 车载多模态智能交互系统 - AI增强版")
-    print("🔧 集成系统管理功能：用户配置、权限管理、交互日志")
+    print("🔧 集成交互日志记录和基础用户配置功能")
     print("=" * 60)
     
     # 1. 启动后端多模态服务（在后台线程）
@@ -822,7 +664,7 @@ def main():
     weather_text = fetch_weather("Tianjin")
     QTimer.singleShot(10, lambda: ui_backend.weatherUpdated.emit(weather_text))
     
-    print("🎛️ 系统管理功能已集成到应用")
+    print("🎛️ 交互日志记录功能已集成到应用")
 
     # 4. 进入 Qt 事件循环（阻塞）
     try:

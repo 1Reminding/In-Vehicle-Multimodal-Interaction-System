@@ -128,7 +128,7 @@ class MultimodalCollector:
         """更新手势数据"""
         with self._lock:
             gesture = gesture_data.get("gesture")
-            confidence = gesture_data.get("conf", 0.0)
+            confidence = float(gesture_data.get("conf", 0.0))  # 确保是Python原生float类型
             
             if gesture and confidence > 0.7:  # 置信度阈值
                 # 推断手势意图
@@ -312,7 +312,7 @@ class MultimodalCollector:
         if self.current_gaze_state:
             return {
                 "state": self.current_gaze_state.state,
-                "duration": self.current_gaze_state.duration,
+                "duration": float(self.current_gaze_state.duration),  # 确保是Python原生float类型
                 "deviation": self.current_gaze_state.deviation_level,
                 "distraction_detected": self.distraction_detected,
                 "waiting_for_confirmation": self.waiting_for_confirmation
@@ -330,7 +330,7 @@ class MultimodalCollector:
         if self.current_gesture_state:
             return {
                 "gesture": self.current_gesture_state.gesture,
-                "confidence": self.current_gesture_state.confidence,
+                "confidence": float(self.current_gesture_state.confidence),  # 确保是Python原生float类型
                 "intent": self.current_gesture_state.intent
             }
         return {"gesture": "none", "confidence": 0.0, "intent": "unknown"}
