@@ -74,8 +74,8 @@ class UIBackend(QObject):
         result = system_manager.set_vehicle_state(is_driving, is_emergency)
         self.systemAlert.emit(f"车辆状态：{result['new_context']}")
 
-# 使用增强的UI后端
-ui_backend = EnhancedUIBackend()
+# 使用基本的UI后端
+ui_backend = UIBackend()
 
 class AIMultimodalApp:
     """AI增强的多模态交互应用"""
@@ -768,57 +768,6 @@ class SystemManagementAPI:
         except Exception as e:
             return {"error": str(e)}
 
-# 扩展UIBackend以支持系统管理
-class EnhancedUIBackend(UIBackend):
-    """增强的UI后端，集成系统管理功能"""
-    
-    # 新增信号
-    systemStatsUpdated = pyqtSignal(str)     # 系统统计更新
-    userDashboardUpdated = pyqtSignal(str)   # 用户控制面板更新
-    
-    def __init__(self):
-        super().__init__()
-        self.stats_timer = QTimer()
-        self.stats_timer.timeout.connect(self.update_system_stats)
-        self.stats_timer.start(5000)  # 每5秒更新一次统计
-    
-    @pyqtSlot()
-    def getCurrentUser(self):
-        """获取当前用户信息"""
-        user_info = SystemManagementAPI.get_current_user()
-        if user_info:
-            self.userStatusUpdated.emit(json.dumps(user_info))
-        else:
-            self.userStatusUpdated.emit(json.dumps({"status": "未登录"}))
-    
-    @pyqtSlot()
-    def getSystemStatus(self):
-        """获取系统状态"""
-        status = SystemManagementAPI.get_system_status()
-        self.systemStatsUpdated.emit(json.dumps(status))
-    
-    @pyqtSlot(int)
-    def getInteractionStats(self, days):
-        """获取交互统计"""
-        stats = SystemManagementAPI.get_interaction_stats(days)
-        self.systemStatsUpdated.emit(json.dumps(stats))
-    
-    @pyqtSlot(int)
-    def getPermissionReport(self, days):
-        """获取权限报告"""
-        report = SystemManagementAPI.get_permission_report(days)
-        self.systemStatsUpdated.emit(json.dumps(report))
-    
-    def update_system_stats(self):
-        """定期更新系统统计"""
-        try:
-            app = get_app_instance()
-            if app:
-                dashboard = app.get_system_dashboard()
-                self.userDashboardUpdated.emit(json.dumps(dashboard))
-        except Exception as e:
-            print(f"⚠️ 更新系统统计失败: {e}")
-
 def fetch_weather(city="Tianjin"):
     #api_key = "e8527d822a260a90258bbbcf110506e8"
     url = f"http://api.openweathermap.org/data/2.5/weather?q=Tianjin&appid=e8527d822a260a90258bbbcf110506e8&units=metric&lang=zh_cn"
@@ -873,17 +822,7 @@ def main():
     weather_text = fetch_weather("Tianjin")
     QTimer.singleShot(10, lambda: ui_backend.weatherUpdated.emit(weather_text))
     
-    # 发送初始系统状态
-    QTimer.singleShot(100, lambda: ui_backend.getCurrentUser())
-    QTimer.singleShot(200, lambda: ui_backend.getSystemStatus())
-
-    print("🎛️ 系统管理功能已集成到UI")
-    print("📋 可用功能：")
-    print("   - 用户状态监控")
-    print("   - 车辆状态控制")
-    print("   - 权限管理")
-    print("   - 交互日志分析")
-    print("   - 个性化配置")
+    print("🎛️ 系统管理功能已集成到应用")
 
     # 4. 进入 Qt 事件循环（阻塞）
     try:
