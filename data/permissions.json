@@ -1,0 +1,86 @@
+{
+  "navigation": {
+    "driver": {
+      "parked": 3,
+      "driving": 1,
+      "emergency": 3
+    },
+    "passenger": {
+      "parked": 2,
+      "driving": 0,
+      "emergency": 1
+    }
+  },
+  "music": {
+    "driver": {
+      "parked": 3,
+      "driving": 2,
+      "emergency": 0
+    },
+    "passenger": {
+      "parked": 2,
+      "driving": 2,
+      "emergency": 0
+    }
+  },
+  "climate": {
+    "driver": {
+      "parked": 3,
+      "driving": 2,
+      "emergency": 1
+    },
+    "passenger": {
+      "parked": 2,
+      "driving": 2,
+      "emergency": 0
+    }
+  },
+  "communication": {
+    "driver": {
+      "parked": 3,
+      "driving": 1,
+      "emergency": 3
+    },
+    "passenger": {
+      "parked": 2,
+      "driving": 0,
+      "emergency": 2
+    }
+  },
+  "system_settings": {
+    "driver": {
+      "parked": 3,
+      "driving": 0,
+      "emergency": 0
+    },
+    "passenger": {
+      "parked": 1,
+      "driving": 0,
+      "emergency": 0
+    }
+  },
+  "voice_control": {
+    "driver": {
+      "parked": 3,
+      "driving": 3,
+      "emergency": 3
+    },
+    "passenger": {
+      "parked": 2,
+      "driving": 1,
+      "emergency": 2
+    }
+  },
+  "gesture_control": {
+    "driver": {
+      "parked": 3,
+      "driving": 2,
+      "emergency": 2
+    },
+    "passenger": {
+      "parked": 2,
+      "driving": 1,
+      "emergency": 0
+    }
+  }
+}
