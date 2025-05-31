@@ -15,9 +15,9 @@ class Recorder:
         self,
         rate: int = 16000,
         frame_ms: int = 30,
-        silence_limit: float = 0.8,
+        silence_limit: float = 1.0,
         channels: int = 1,
-        aggressiveness: int = 2,
+        aggressiveness: int = 3,
     ):
         self.rate = rate
         self.frame_bytes = int(rate * frame_ms / 1000) * 2 * channels  # int16=2字节

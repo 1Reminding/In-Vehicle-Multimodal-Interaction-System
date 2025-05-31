@@ -357,7 +357,7 @@ class AIMultimodalApp:
                     time.sleep(0.01)
                     continue
                 
-                frame = cv2.flip(frame, 1)
+                #frame = cv2.flip(frame, 1)
                 
                 # 眼动追踪
                 gaze.refresh(frame)
