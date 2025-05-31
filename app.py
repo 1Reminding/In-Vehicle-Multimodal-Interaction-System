@@ -33,25 +33,25 @@ from modules.system.system_manager import system_manager
 
 import os
 import requests
-from PyQt5.QtGui     import QGuiApplication
-from PyQt5.QtQml     import QQmlApplicationEngine
-from PyQt5.QtCore   import QUrl, QObject, pyqtSignal, pyqtSlot, QTimer
+from PyQt5.QtGui import QGuiApplication
+from PyQt5.QtQml import QQmlApplicationEngine
+from PyQt5.QtCore import QUrl, QObject, pyqtSignal, pyqtSlot, QTimer
 
 
 class UIBackend(QObject):
     """暴露给 QML 的桥接对象"""
     commandIssued = pyqtSignal(str)
     weatherUpdated = pyqtSignal(str)
-    
+
     # 系统状态信号
     userStatusUpdated = pyqtSignal(str)  # 用户状态更新
-    systemAlert = pyqtSignal(str)        # 系统警告
+    systemAlert = pyqtSignal(str)  # 系统警告
 
     @pyqtSlot(str)
     def requestAction(self, cmd):
         print(f"🔷 前端请求动作：{cmd}")
         handle_action(cmd)
-    
+
     @pyqtSlot(str)
     def setCurrentUser(self, user_id):
         """设置当前用户（简化版）"""
@@ -62,20 +62,22 @@ class UIBackend(QObject):
         else:
             self.userStatusUpdated.emit(f"用户 {user_id} 不存在")
 
+
 # 使用基本的UI后端
 ui_backend = UIBackend()
 
+
 class AIMultimodalApp:
     """AI增强的多模态交互应用"""
-    
+
     def __init__(self):
         self.running = False
         self.audio_thread = None
         self.vision_thread = None
-        
+
         # 当前用户信息（简化）
         self.current_user_id = None
-        
+
         self.stats = {
             "ai_requests": 0,
             "successful_responses": 0,
@@ -84,13 +86,13 @@ class AIMultimodalApp:
             "gaze_changes": 0,
             "start_time": time.time()
         }
-        
+
         # 设置多模态数据回调
         multimodal_collector.set_callback(self.on_multimodal_data_ready)
-        
+
         # 初始化系统管理（仅用于交互日志）
         self._initialize_system_management()
-        
+
         print("🚀 AI多模态交互系统初始化完成")
         print("📋 功能说明:")
         print("   - 眼动偏离超过3秒触发AI分析")
@@ -99,7 +101,7 @@ class AIMultimodalApp:
         print("   - AI分析结果通过文本显示")
         print("   - 自动记录所有交互日志用于分析优化")
         print("   - 按 Ctrl+C 退出系统")
-    
+
     def _initialize_system_management(self):
         """初始化系统管理功能（简化版，主要用于交互日志）"""
         try:
@@ -108,7 +110,7 @@ class AIMultimodalApp:
             if not system_manager.user_config.load_user(default_user_id):
                 print(f"📋 创建默认用户：{default_user_id}")
                 system_manager.create_user_profile(default_user_id, "默认用户", "driver")
-            
+
             # 加载默认用户并开始会话
             if system_manager.user_config.load_user(default_user_id):
                 self.current_user_id = default_user_id
@@ -116,20 +118,20 @@ class AIMultimodalApp:
                 print(f"✅ 系统管理初始化完成，当前用户：{default_user_id}")
             else:
                 print("⚠️ 无法加载默认用户，系统将以访客模式运行")
-                
+
         except Exception as e:
             print(f"❌ 系统管理初始化失败：{e}")
             print("⚠️ 系统将以基础模式运行，部分功能可能受限")
-    
+
     def _get_simple_user_settings(self) -> Dict[str, Any]:
         """获取简化的用户设置（主要用于交互日志记录）"""
         if not self.current_user_id:
             return {}
-        
+
         try:
             # 获取基础用户统计
             user_stats = system_manager.user_config.get_interaction_stats()
-            
+
             return {
                 "user_id": self.current_user_id,
                 "interaction_stats": user_stats,
@@ -145,36 +147,37 @@ class AIMultimodalApp:
         print(f"\n🤖 AI分析开始...")
         print(f"📊 输入数据:")
         print(f"   👁 眼动: {multimodal_input.gaze_data['state']} ({multimodal_input.gaze_data['duration']:.1f}s)")
-        print(f"   🖐 手势: {multimodal_input.gesture_data['gesture']} ({multimodal_input.gesture_data['confidence']:.2f})")
+        print(
+            f"   🖐 手势: {multimodal_input.gesture_data['gesture']} ({multimodal_input.gesture_data['confidence']:.2f})")
         print(f"   🎤 语音: '{multimodal_input.speech_data['text']}'")
-        
+
         # 确定交互类别
         interaction_category = self._get_interaction_category(multimodal_input)
-        
+
         # 获取用户设置
         user_settings = self._get_simple_user_settings()
-        
+
         # 更新统计
         self.stats["ai_requests"] += 1
         start_time = time.time()
-        
+
         try:
             # 调用DeepSeek API进行分析
             ai_response = deepseek_client.analyze_multimodal_data(multimodal_input)
             processing_time = time.time() - start_time
-            
+
             print(f"\n🧠 AI分析结果:")
             print(f"   📋 推荐操作: {ai_response.recommendation_text}")
             print(f"   🎯 置信度: {ai_response.confidence:.2f}")
             print(f"   💭 推理过程: {ai_response.reasoning}")
-            
+
             # 解析操作指令
             try:
                 action_data = json.loads(ai_response.action_code)
                 print(f"   ⚙️ 操作指令: {action_data}")
             except json.JSONDecodeError:
                 print(f"   ⚙️ 操作指令: {ai_response.action_code}")
-            
+
             # 记录交互日志
             interaction_data = {
                 "modality": "multimodal",
@@ -186,14 +189,14 @@ class AIMultimodalApp:
                 "user_id": self.current_user_id,
                 "user_settings": user_settings
             }
-            
+
             ai_response_data = {
                 "confidence": ai_response.confidence,
                 "recommendation": ai_response.recommendation_text,
                 "reasoning": ai_response.reasoning,
                 "action_code": ai_response.action_code
             }
-            
+
             # 通过系统管理器记录交互日志
             system_result = system_manager.process_multimodal_interaction(
                 interaction_data=interaction_data,
@@ -201,10 +204,10 @@ class AIMultimodalApp:
                 processing_time=processing_time,
                 success=True
             )
-            
+
             if system_result["success"]:
                 print(f"✅ 交互日志记录成功 - 会话ID: {system_result.get('session_id')}")
-                
+
                 # 解析操作指令并执行
                 try:
                     action_data = json.loads(ai_response.action_code)
@@ -213,26 +216,26 @@ class AIMultimodalApp:
                     ui_backend.commandIssued.emit(json.dumps(action_data))
 
                 except json.JSONDecodeError:
-                    print(f"   ⚙️ 执行操作: {ai_response.action_code}")       
+                    print(f"   ⚙️ 执行操作: {ai_response.action_code}")
                     handle_action(ai_response.action_code)
                     ui_backend.commandIssued.emit(ai_response.action_code)
-                
+
                 # 文本反馈
                 if ai_response.recommendation_text:
                     print(f"💬 系统建议: {ai_response.recommendation_text}")
-                
+
                 # 添加到对话历史
                 deepseek_client.add_to_conversation_history(multimodal_input, ai_response)
-                
+
                 self.stats["successful_responses"] += 1
             else:
                 print(f"🚫 交互日志记录失败: {system_result['message']}")
-            
+
         except Exception as e:
             processing_time = time.time() - start_time
             print(f"❌ AI分析失败: {e}")
             print("💬 系统提示: 抱歉，系统暂时无法处理您的请求")
-            
+
             # 记录错误到交互日志
             interaction_data = {
                 "modality": "multimodal",
@@ -241,18 +244,18 @@ class AIMultimodalApp:
                 "error": str(e),
                 "user_id": self.current_user_id
             }
-            
+
             system_manager.process_multimodal_interaction(
                 interaction_data=interaction_data,
                 processing_time=processing_time,
                 success=False,
                 error_message=str(e)
             )
-    
+
     def _get_interaction_category(self, multimodal_input: MultimodalInput) -> str:
         """根据多模态输入推断交互类别"""
         text = multimodal_input.speech_data.get('text', '').lower()
-        
+
         if any(word in text for word in ['导航', '目的地', '路线', '地图']):
             return 'navigation'
         elif any(word in text for word in ['音乐', '歌曲', '播放', '暂停']):
@@ -265,82 +268,82 @@ class AIMultimodalApp:
             return 'settings'
         else:
             return 'system'
-    
+
     def switch_user(self, user_id: str) -> bool:
         """切换用户（简化版）"""
         try:
             # 结束当前会话
             if self.current_user_id:
                 system_manager.end_session()
-            
+
             # 加载新用户
             if system_manager.user_config.load_user(user_id):
                 self.current_user_id = user_id
-                
+
                 # 开始新会话
                 system_manager.start_session(user_id)
-                
+
                 print(f"✅ 用户切换成功：{user_id}")
                 ui_backend.userStatusUpdated.emit(f"当前用户：{user_id}")
-                
+
                 return True
             else:
                 print(f"❌ 用户不存在：{user_id}")
                 ui_backend.userStatusUpdated.emit(f"用户 {user_id} 不存在")
                 return False
-                
+
         except Exception as e:
             print(f"❌ 用户切换失败：{e}")
             ui_backend.userStatusUpdated.emit(f"用户切换失败：{e}")
             return False
-    
+
     def audio_worker(self):
         """音频工作线程"""
         print("🎤 音频线程启动")
         rec = Recorder()
-        
+
         try:
             for seg in rec.record_stream():
                 if not self.running:
                     break
-                
+
                 # 语音识别
                 text = transcribe(seg["wav"])
                 if not text or not text.strip():
                     continue
-                
+
                 # 更新统计
                 self.stats["speech_inputs"] += 1
-                
+
                 print(f"🎤 语音识别: '{text}'")
-                
+
                 # 更新多模态收集器
                 speech_data = {
                     "text": text,
                 }
                 multimodal_collector.update_speech_data(speech_data)
-                
+
         except Exception as e:
             print(f"❌ 音频线程错误: {e}")
         finally:
             print("🎤 音频线程结束")
-    
+
     def vision_worker(self):
         """视觉工作线程"""
         print("👁 视觉线程启动")
-        
+
         # 获取摄像头管理器
         camera_manager = get_camera_manager()
-        
+
         # 初始化视觉模块
         gr = GestureRecognizer()
         hp = HeadPoseDetector()
         gaze = GazeTracking()
-        
+
         if not camera_manager.is_opened:
             print("❌ 摄像头无法打开")
             return
-        
+
         # 状态变量
         last_gesture = None
         last_gaze_state = None
@@ -349,16 +352,16 @@ class AIMultimodalApp:
         stability_threshold = 0.5
         last_gaze_update_time = time.time()  # 记录上次眼动更新时间
         gaze_update_interval = 0.5  # 设置眼动更新时间间隔（秒）
-        
+
         try:
             while self.running:
                 ok, frame = camera_manager.read_frame()
                 if not ok:
                     time.sleep(0.01)
                     continue
-                
-                #frame = cv2.flip(frame, 1)
-                
+
+                # frame = cv2.flip(frame, 1)
+
                 # 眼动追踪
                 gaze.refresh(frame)
                 current_gaze_state = "center"
@@ -368,29 +371,30 @@ class AIMultimodalApp:
                     current_gaze_state = "left"
                 elif gaze.is_center():
                     current_gaze_state = "center"
-                
+
                 current_time = time.time()
-                
+
                 # 眼动状态变化时或定期更新收集器
-                if current_gaze_state != last_gaze_state or (current_time - last_gaze_update_time) >= gaze_update_interval:
+                if current_gaze_state != last_gaze_state or (
+                        current_time - last_gaze_update_time) >= gaze_update_interval:
                     last_gaze_state = current_gaze_state
                     last_gaze_update_time = current_time
-                    
+
                     if current_gaze_state != "center":
                         self.stats["gaze_changes"] += 1
-                    
+
                     gaze_data = {
                         "state": current_gaze_state,
                         "ts": current_time
                     }
                     multimodal_collector.update_gaze_data(gaze_data)
-                    
+
                     # 显示眼动状态持续时间
                     collector_status = multimodal_collector.get_status()
                     gaze_state = collector_status["current_gaze"]
                     if gaze_state["state"] != "center" and gaze_state["duration"] > 1.0:
                         print(f"👁 眼动持续: {gaze_state['state']}, 时长: {gaze_state['duration']:.1f}秒")
-                
+
                 # 头部姿态检测
                 head_pose_result = hp.process_frame(frame)
                 if head_pose_result:
@@ -398,16 +402,16 @@ class AIMultimodalApp:
                         print(f"🎯 头部姿态基线校准: pitch0={head_pose_result['pitch0']:.1f}°")
                     elif head_pose_result["type"] == "head_pose":
                         print(f"🗣 头部姿态: {head_pose_result}")
-                
+
                 # 手势识别
                 rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
                 rgb.flags.writeable = False
                 res = gr.hands.process(rgb)
                 rgb.flags.writeable = True
-                
+
                 current_gesture = None
                 current_conf = 0.0
-                
+
                 if res.multi_hand_landmarks:
                     for hlm in res.multi_hand_landmarks:
                         gesture, conf = gr._recognize_gesture(hlm)
@@ -415,14 +419,14 @@ class AIMultimodalApp:
                             current_gesture = gesture
                             current_conf = conf
                             break
-                
+
                 # 手势稳定性检测 - 更新逻辑
-                if current_gesture: # A gesture is currently detected
-                    if current_gesture == stable_gesture: # Gesture is being held
+                if current_gesture:  # A gesture is currently detected
+                    if current_gesture == stable_gesture:  # Gesture is being held
                         if stable_start_time is not None:
                             stable_duration = current_time - stable_start_time
-                            if stable_duration >= stability_threshold: # Gesture is stable and held long enough
-                                if current_gesture != last_gesture: # Check if it's different from the last *processed* gesture for this hold period
+                            if stable_duration >= stability_threshold:  # Gesture is stable and held long enough
+                                if current_gesture != last_gesture:  # Check if it's different from the last *processed* gesture for this hold period
                                     # This is a new, stable gesture or the first time this held gesture is processed
                                     self.stats["gesture_detections"] += 1
                                     gesture_data = {
@@ -431,63 +435,64 @@ class AIMultimodalApp:
                                         "ts": current_time,
                                         "stable_duration": stable_duration
                                     }
-                                    print(f"🖐 手势检测: {current_gesture} (置信度: {current_conf:.2f}, 持续: {stable_duration:.2f}s)")
+                                    print(
+                                        f"🖐 手势检测: {current_gesture} (置信度: {current_conf:.2f}, 持续: {stable_duration:.2f}s)")
                                     multimodal_collector.update_gesture_data(gesture_data)
-                                    last_gesture = current_gesture # Mark as processed for this hold period
+                                    last_gesture = current_gesture  # Mark as processed for this hold period
                                 # else: Gesture is same as last_gesture, and still being held, do not re-trigger
                     else:
                         # New gesture has appeared, or gesture changed from the one being tracked for stability
                         stable_gesture = current_gesture
-                        stable_start_time = current_time # Start timer for this new candidate
+                        stable_start_time = current_time  # Start timer for this new candidate
                         # last_gesture is not updated here. It only updates when a gesture is *processed*.
-                else: # No gesture detected in the current frame
+                else:  # No gesture detected in the current frame
                     if stable_gesture is not None:
                         # A gesture was previously active (being tracked for stability), but now it's gone.
                         # This signifies the end of a gesture performance.
                         # Reset last_gesture so that the *next* gesture, even if it's the same as the previous stable_gesture,
                         # can be treated as a new instance if it becomes stable again.
                         # This allows re-detection of the same gesture after a pause.
-                        last_gesture = None 
-                    
-                    stable_gesture = None # Reset stable_gesture as no gesture is currently detected
-                    stable_start_time = None # Reset stability timer
-                
+                        last_gesture = None
+
+                    stable_gesture = None  # Reset stable_gesture as no gesture is currently detected
+                    stable_start_time = None  # Reset stability timer
+
         except Exception as e:
             print(f"❌ 视觉线程错误: {e}")
         finally:
             gr.hands.close()
             print("👁 视觉线程结束")
-    
+
     def print_status(self):
         """打印系统状态"""
         runtime = time.time() - self.stats["start_time"]
-        
+
         print(f"\n📊 系统状态 (运行时间: {runtime:.1f}秒)")
         print(f"   🤖 AI请求次数: {self.stats['ai_requests']}")
         print(f"   ✅ 成功响应: {self.stats['successful_responses']}")
         print(f"   🎤 语音输入: {self.stats['speech_inputs']}")
         print(f"   🖐 手势检测: {self.stats['gesture_detections']}")
         print(f"   👁 眼动变化: {self.stats['gaze_changes']}")
-        
+
         # 多模态收集器状态
         collector_status = multimodal_collector.get_status()
         print(f"   📋 收集器状态: {'收集中' if collector_status['is_collecting'] else '待机'}")
-        
+
         # 系统管理状态
         if self.current_user_id:
             print(f"   👤 当前用户: {self.current_user_id}")
-            
+
             # 获取交互日志统计
             try:
                 system_analytics = system_manager.get_system_analytics(days=1)
                 print(f"   📈 今日交互: {system_analytics.get('total_interactions', 0)} 次")
                 print(f"   📊 成功率: {system_analytics.get('success_rate', 0):.1%}")
-                
+
             except Exception as e:
                 print(f"   ⚠️ 系统统计获取失败: {e}")
         else:
             print(f"   👤 当前用户: 未登录")
-    
+
     def get_system_dashboard(self) -> Dict[str, Any]:
         """获取系统控制面板信息"""
         try:
@@ -497,58 +502,57 @@ class AIMultimodalApp:
                     "system_status": {"message": "请先登录用户"},
                     "stats": self.stats
                 }
-            
+
             # 获取系统管理器的控制面板
             dashboard = system_manager.get_user_dashboard()
-            
+
             # 添加应用层统计
             dashboard["app_stats"] = self.stats
             dashboard["runtime"] = time.time() - self.stats["start_time"]
-            
+
             return dashboard
-            
+
         except Exception as e:
             print(f"⚠️ 获取系统控制面板失败: {e}")
             return {
                 "error": str(e),
                 "stats": self.stats
             }
-    
+
     def signal_handler(self, signum, frame):
         """信号处理器"""
         print(f"\n🛑 接收到退出信号 ({signum})")
         self.stop()
-    
+
     def start(self):
-        """启动应用"""
-        print("🚀 启动AI多模态交互系统...")
-        
+        """启动应用：语音作为主线程，视觉放到后台线程"""
+        print("🚀 启动AI多模态交互系统（语音主线程）...")
         self.running = True
-        
-        # 启动音频线程
-        self.audio_thread = threading.Thread(target=self.audio_worker, daemon=True)
-        self.audio_thread.start()
-        
-        # 启动视觉线程（主线程）
+
+        # 1. 后台启动视觉线程
+        self.vision_thread = threading.Thread(target=self.vision_worker, daemon=True)
+        self.vision_thread.start()
+
+        # 2. 主线程直接运行音频循环
         try:
-            self.vision_worker()
+            self.audio_worker()
         except KeyboardInterrupt:
-            print("\n⌨️ 用户中断")
+            print("\n⌨️ 用户中断（音频主线程）")
         finally:
             self.stop()
-    
+
     def stop(self):
         """停止应用"""
         if not self.running:
             return
-        
+
         print("🛑 正在停止AI多模态交互系统...")
         self.running = False
-        
+
         # 等待线程结束
         if self.audio_thread and self.audio_thread.is_alive():
             self.audio_thread.join(timeout=2.0)
-        
+
         # 结束系统管理会话
         try:
             if self.current_user_id:
@@ -556,10 +560,10 @@ class AIMultimodalApp:
                 print(f"📋 用户会话已结束: {self.current_user_id}")
         except Exception as e:
             print(f"⚠️ 结束会话时出错: {e}")
-        
+
         # 打印最终状态和系统分析
         self.print_status()
-        
+
         # 显示交互日志总结
         try:
             print(f"\n📈 交互日志总结:")
@@ -567,34 +571,36 @@ class AIMultimodalApp:
             print(f"   📊 今日总交互: {analytics.get('total_interactions', 0)} 次")
             print(f"   ✅ 成功率: {analytics.get('success_rate', 0):.1%}")
             print(f"   ⏱️ 平均响应时间: {analytics.get('avg_response_time', 0):.2f}秒")
-            
+
             # 用户交互习惯分析
             if self.current_user_id:
                 user_stats = system_manager.user_config.get_interaction_stats()
                 print(f"   🖐 最常用手势: {user_stats.get('most_used_gesture', 'none')}")
                 print(f"   🎤 最常用语音指令: {user_stats.get('most_used_voice_command', 'none')}")
-                
+
         except Exception as e:
             print(f"⚠️ 交互日志总结获取失败: {e}")
-        
+
         # 关闭资源
         release_camera_manager()
-        
+
         print("✅ AI多模态交互系统已停止")
 
 
 # 全局应用实例，用于UI交互
 app_instance = None
 
+
 def get_app_instance():
     """获取应用实例"""
     global app_instance
     return app_instance
 
+
 # 为UI提供的系统管理接口（简化版）
 class SystemManagementAPI:
     """系统管理API，供UI调用（简化版，主要用于交互日志）"""
-    
+
     @staticmethod
     def get_current_user():
         """获取当前用户信息"""
@@ -603,7 +609,7 @@ class SystemManagementAPI:
             try:
                 user_name = system_manager.user_config.get_preference('user_info.name', '未知')
                 last_login = system_manager.user_config.get_preference('user_info.last_login', '未知')
-                
+
                 return {
                     "user_id": app.current_user_id,
                     "name": user_name,
@@ -612,7 +618,7 @@ class SystemManagementAPI:
             except:
                 return None
         return None
-    
+
     @staticmethod
     def get_system_status():
         """获取系统状态"""
@@ -620,7 +626,7 @@ class SystemManagementAPI:
         if app:
             return app.get_system_dashboard()
         return {"error": "应用未初始化"}
-    
+
     @staticmethod
     def switch_user(user_id: str):
         """切换用户"""
@@ -628,7 +634,7 @@ class SystemManagementAPI:
         if app:
             return app.switch_user(user_id)
         return False
-    
+
     @staticmethod
     def get_interaction_stats(days: int = 7):
         """获取交互统计"""
@@ -637,8 +643,9 @@ class SystemManagementAPI:
         except Exception as e:
             return {"error": str(e)}
 
+
 def fetch_weather(city="Tianjin"):
-    #api_key = "e8527d822a260a90258bbbcf110506e8"
+    # api_key = "e8527d822a260a90258bbbcf110506e8"
     url = f"http://api.openweathermap.org/data/2.5/weather?q=Tianjin&appid=e8527d822a260a90258bbbcf110506e8&units=metric&lang=zh_cn"
 
     try:
@@ -655,19 +662,20 @@ def fetch_weather(city="Tianjin"):
         print("❌ 请求天气失败：", e)
         return "天气异常"
 
+
 def main():
     """主函数"""
     global app_instance
-    
+
     print("=" * 60)
     print("🚗 车载多模态智能交互系统 - AI增强版")
     print("🔧 集成交互日志记录和基础用户配置功能")
     print("=" * 60)
-    
+
     # 1. 启动后端多模态服务（在后台线程）
     backend = AIMultimodalApp()
     app_instance = backend  # 设置全局实例
-    
+
     signal.signal(signal.SIGINT, backend.signal_handler)
     signal.signal(signal.SIGTERM, backend.signal_handler)
 
@@ -676,7 +684,7 @@ def main():
     # 2. 启动 QML 界面
     app = QGuiApplication(sys.argv)
     engine = QQmlApplicationEngine()
-    
+
     # 注册系统管理API到QML上下文
     engine.rootContext().setContextProperty("UIBackend", ui_backend)
     engine.rootContext().setContextProperty("SystemAPI", SystemManagementAPI)
@@ -690,7 +698,7 @@ def main():
     # 3. 初始化界面数据
     weather_text = fetch_weather("Tianjin")
     QTimer.singleShot(10, lambda: ui_backend.weatherUpdated.emit(weather_text))
-    
+
     print("🎛️ 交互日志记录功能已集成到应用")
 
     # 4. 进入 Qt 事件循环（阻塞）
@@ -707,4 +715,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main() 
+    main()

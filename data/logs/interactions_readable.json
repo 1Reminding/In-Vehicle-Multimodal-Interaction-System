@@ -2870,5 +2870,265 @@
     "success": true,
     "error_message": null,
     "context_data": null
+  },
+  {
+    "timestamp": "2025-05-31T16:40:16.191003",
+    "user_id": "default_user",
+    "session_id": "0516b6e7-6c55-4e70-935b-7dbbcaeabfd6",
+    "interaction_type": "ai_analysis",
+    "modality": "multimodal",
+    "input_data": {
+      "modality": "multimodal",
+      "type": "ai_analysis",
+      "category": "climate",
+      "gaze_data": {
+        "state": "center",
+        "duration": 6.21365213394165,
+        "deviation_level": "normal",
+        "distraction_detected": false
+      },
+      "gesture_data": {
+        "gesture": "none",
+        "confidence": 0.0,
+        "intent": "unknown"
+      },
+      "speech_data": {
+        "text": "请帮我打开空调",
+        "intent": "command",
+        "emotion": "neutral"
+      },
+      "user_id": "default_user",
+      "user_settings": {
+        "user_id": "default_user",
+        "interaction_stats": {
+          "most_used_gesture": "none",
+          "most_used_voice_command": "none",
+          "total_interactions": 0,
+          "gesture_stats": {},
+          "voice_stats": {}
+        },
+        "most_used_gesture": "none",
+        "most_used_voice_command": "none"
+      }
+    },
+    "ai_response": {
+      "confidence": 0.95,
+      "recommendation": "正在为您打开空调",
+      "reasoning": "根据语音识别结果，用户明确发出了'请帮我打开空调'的指令，且情感倾向为中性。眼动数据显示用户视线状态正常，持续时间为6.2秒，偏离程度正常，手势数据未检测到任何手势，表明用户当前专注于驾驶且没有其他干扰。因此，执行打开空调的指令是安全的。",
+      "action_code": "TurnOnAC"
+    },
+    "confidence": 0.95,
+    "processing_time": 8.689126014709473,
+    "success": true,
+    "error_message": null,
+    "context_data": null
+  },
+  {
+    "timestamp": "2025-05-31T16:45:15.937215",
+    "user_id": "default_user",
+    "session_id": "aee5d992-4778-4027-b4e7-6c9e020509d6",
+    "interaction_type": "ai_analysis",
+    "modality": "multimodal",
+    "input_data": {
+      "modality": "multimodal",
+      "type": "ai_analysis",
+      "category": "climate",
+      "gaze_data": {
+        "state": "left",
+        "duration": 1.2654600143432617,
+        "deviation_level": "normal",
+        "distraction_detected": false
+      },
+      "gesture_data": {
+        "gesture": "none",
+        "confidence": 0.0,
+        "intent": "unknown"
+      },
+      "speech_data": {
+        "text": "打开空调",
+        "intent": "command",
+        "emotion": "neutral"
+      },
+      "user_id": "default_user",
+      "user_settings": {
+        "user_id": "default_user",
+        "interaction_stats": {
+          "most_used_gesture": "none",
+          "most_used_voice_command": "none",
+          "total_interactions": 0,
+          "gesture_stats": {},
+          "voice_stats": {}
+        },
+        "most_used_gesture": "none",
+        "most_used_voice_command": "none"
+      }
+    },
+    "ai_response": {
+      "confidence": 0.95,
+      "recommendation": "正在为您打开空调",
+      "reasoning": "语音数据检测到明确的指令'打开空调'，且情感倾向为中性，表明这是一个明确的命令请求。眼动数据显示驾驶员视线状态正常，没有分心迹象。手势数据未检测到相关手势，不影响当前指令执行。综合多模态数据，执行打开空调的操作是安全且符合驾驶员意图的。",
+      "action_code": "TurnOnAC"
+    },
+    "confidence": 0.95,
+    "processing_time": 8.818954706192017,
+    "success": true,
+    "error_message": null,
+    "context_data": null
+  },
+  {
+    "timestamp": "2025-05-31T16:45:24.331318",
+    "user_id": "default_user",
+    "session_id": "aee5d992-4778-4027-b4e7-6c9e020509d6",
+    "interaction_type": "ai_analysis",
+    "modality": "multimodal",
+    "input_data": {
+      "modality": "multimodal",
+      "type": "ai_analysis",
+      "category": "system",
+      "gaze_data": {
+        "state": "left",
+        "duration": 10.575763463973999,
+        "deviation_level": "severe",
+        "distraction_detected": true
+      },
+      "gesture_data": {
+        "gesture": "none",
+        "confidence": 0.0,
+        "intent": "unknown"
+      },
+      "speech_data": {
+        "text": "",
+        "intent": "unknown",
+        "emotion": "neutral"
+      },
+      "user_id": "default_user",
+      "user_settings": {
+        "user_id": "default_user",
+        "interaction_stats": {
+          "most_used_gesture": "none",
+          "most_used_voice_command": "none",
+          "total_interactions": 0,
+          "gesture_stats": {},
+          "voice_stats": {}
+        },
+        "most_used_gesture": "none",
+        "most_used_voice_command": "none"
+      }
+    },
+    "ai_response": {
+      "confidence": 0.9,
+      "recommendation": "检测到您视线偏离道路超过10秒，请集中注意力驾驶。",
+      "reasoning": "眼动数据显示驾驶员视线向左偏离道路持续10.6秒，手势和语音数据未检测到其他交互行为，符合分心驾驶特征。根据安全优先原则，系统应提醒驾驶员注意道路安全。",
+      "action_code": "distract"
+    },
+    "confidence": 0.9,
+    "processing_time": 8.345467329025269,
+    "success": true,
+    "error_message": null,
+    "context_data": null
+  },
+  {
+    "timestamp": "2025-05-31T16:49:13.931303",
+    "user_id": "default_user",
+    "session_id": "89d2a7b0-2ed5-472f-9b54-298f4f4ff9f6",
+    "interaction_type": "ai_analysis",
+    "modality": "multimodal",
+    "input_data": {
+      "modality": "multimodal",
+      "type": "ai_analysis",
+      "category": "music",
+      "gaze_data": {
+        "state": "center",
+        "duration": 10.013628482818604,
+        "deviation_level": "normal",
+        "distraction_detected": false
+      },
+      "gesture_data": {
+        "gesture": "none",
+        "confidence": 0.0,
+        "intent": "unknown"
+      },
+      "speech_data": {
+        "text": "打开音乐",
+        "intent": "command",
+        "emotion": "neutral"
+      },
+      "user_id": "default_user",
+      "user_settings": {
+        "user_id": "default_user",
+        "interaction_stats": {
+          "most_used_gesture": "none",
+          "most_used_voice_command": "none",
+          "total_interactions": 0,
+          "gesture_stats": {},
+          "voice_stats": {}
+        },
+        "most_used_gesture": "none",
+        "most_used_voice_command": "none"
+      }
+    },
+    "ai_response": {
+      "confidence": 0.95,
+      "recommendation": "正在为您播放音乐",
+      "reasoning": "根据语音数据识别到用户的指令是'打开音乐'，且语音意图为命令型(command)，情感倾向为中性(neutral)。眼动数据显示驾驶员视线状态正常(center)且持续时间较长(10.0秒)，手势数据未检测到任何手势(none)。综合多模态数据分析，驾驶员当前处于安全驾驶状态，可以安全执行音乐播放指令。",
+      "action_code": "PlayMusic"
+    },
+    "confidence": 0.95,
+    "processing_time": 9.23070240020752,
+    "success": true,
+    "error_message": null,
+    "context_data": null
+  },
+  {
+    "timestamp": "2025-05-31T16:49:26.730060",
+    "user_id": "default_user",
+    "session_id": "89d2a7b0-2ed5-472f-9b54-298f4f4ff9f6",
+    "interaction_type": "ai_analysis",
+    "modality": "multimodal",
+    "input_data": {
+      "modality": "multimodal",
+      "type": "ai_analysis",
+      "category": "system",
+      "gaze_data": {
+        "state": "center",
+        "duration": 21.851994514465332,
+        "deviation_level": "normal",
+        "distraction_detected": false
+      },
+      "gesture_data": {
+        "gesture": "Close",
+        "confidence": 0.7764542102813721,
+        "intent": "stop music"
+      },
+      "speech_data": {
+        "text": "",
+        "intent": "unknown",
+        "emotion": "neutral"
+      },
+      "user_id": "default_user",
+      "user_settings": {
+        "user_id": "default_user",
+        "interaction_stats": {
+          "most_used_gesture": "none",
+          "most_used_voice_command": "none",
+          "total_interactions": 0,
+          "gesture_stats": {},
+          "voice_stats": {}
+        },
+        "most_used_gesture": "none",
+        "most_used_voice_command": "none"
+      }
+    },
+    "ai_response": {
+      "confidence": 0.78,
+      "recommendation": "音乐已关闭。",
+      "reasoning": "根据手势数据检测到'Close'手势，置信度为0.78，手势意图为'stop music'。眼动数据显示驾驶员视线状态为'center'且偏离程度正常，表明驾驶员当前注意力集中在道路上。语音数据未检测到有效输入。综合判断驾驶员意图为关闭音乐，且当前驾驶状态安全，因此执行关闭音乐操作。",
+      "action_code": "StopMusic"
+    },
+    "confidence": 0.78,
+    "processing_time": 10.025006532669067,
+    "success": true,
+    "error_message": null,
+    "context_data": null
   }
 ]
