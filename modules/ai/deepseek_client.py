@@ -21,6 +21,7 @@ class MultimodalInput:
     speech_data: Dict[str, Any]
     timestamp: float
     duration: float  # 数据收集持续时间
+    context: Dict[str, Any] = None  # 上下文信息，如分心恢复等
 
 
 @dataclass
@@ -46,9 +47,27 @@ class DeepSeekClient:
     def create_multimodal_prompt(self, multimodal_input: MultimodalInput) -> str:
         """创建多模态融合的提示词"""
 
+        # 添加上下文信息部分
+        context_section = ""
+        if multimodal_input.context:
+            context_type = multimodal_input.context.get('type', '')
+            if context_type == "attention_restored":
+                context_section = f"""
+## 特殊上下文
+- 类型: 注意力恢复
+- 确认方式: {multimodal_input.context.get('confirmed_by', '未知')}
+- 说明: 驾驶员之前处于分心状态，现已通过{multimodal_input.context.get('confirmed_by', '未知')}确认恢复注意力
+"""
+            elif context_type == "distraction_detected":
+                context_section = """
+## 特殊上下文
+- 类型: 分心检测
+- 说明: 系统检测到驾驶员视线长时间偏离道路，可能存在分心驾驶风险
+"""
+
         prompt = f"""
 你是一个车载智能助手，需要分析多模态输入数据并提供驾驶建议和操作指令。
-
+{context_section}
 ## 输入数据分析
 **时间戳**: {time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(multimodal_input.timestamp))}
 **数据收集时长**: {multimodal_input.duration:.1f}秒
@@ -88,6 +107,7 @@ class DeepSeekClient:
 4. **推理过程** (reasoning):
    - 简要说明决策依据
    - 解释多模态数据如何影响决策
+   - 如果有上下文信息，请在推理中体现（如分心恢复、确认方式等）
 
 ## 响应格式
 请严格按照以下JSON格式回复：
@@ -112,6 +132,7 @@ class DeepSeekClient:
 ## 安全优先原则
 - 驾驶安全始终是第一优先级
 - 如果检测到分心驾驶，优先提醒注意道路
+- 如果驾驶员刚从分心状态恢复，给予正面鼓励
 - 避免在驾驶过程中执行复杂操作
 - 语音交互优于视觉交互
 

@@ -347,6 +347,8 @@ class AIMultimodalApp:
         stable_gesture = None
         stable_start_time = None
         stability_threshold = 0.5
+        last_gaze_update_time = time.time()  # 记录上次眼动更新时间
+        gaze_update_interval = 0.5  # 设置眼动更新时间间隔（秒）
         
         try:
             while self.running:
@@ -367,16 +369,27 @@ class AIMultimodalApp:
                 elif gaze.is_center():
                     current_gaze_state = "center"
                 
-                # 眼动状态变化时更新收集器
-                if current_gaze_state != last_gaze_state:
+                current_time = time.time()
+                
+                # 眼动状态变化时或定期更新收集器
+                if current_gaze_state != last_gaze_state or (current_time - last_gaze_update_time) >= gaze_update_interval:
                     last_gaze_state = current_gaze_state
-                    self.stats["gaze_changes"] += 1
+                    last_gaze_update_time = current_time
+                    
+                    if current_gaze_state != "center":
+                        self.stats["gaze_changes"] += 1
                     
                     gaze_data = {
                         "state": current_gaze_state,
-                        "ts": time.time()
+                        "ts": current_time
                     }
                     multimodal_collector.update_gaze_data(gaze_data)
+                    
+                    # 显示眼动状态持续时间
+                    collector_status = multimodal_collector.get_status()
+                    gaze_state = collector_status["current_gaze"]
+                    if gaze_state["state"] != "center" and gaze_state["duration"] > 1.0:
+                        print(f"👁 眼动持续: {gaze_state['state']}, 时长: {gaze_state['duration']:.1f}秒")
                 
                 # 头部姿态检测
                 head_pose_result = hp.process_frame(frame)
@@ -392,7 +405,6 @@ class AIMultimodalApp:
                 res = gr.hands.process(rgb)
                 rgb.flags.writeable = True
                 
-                current_time = time.time()
                 current_gesture = None
                 current_conf = 0.0
                 
