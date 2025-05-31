@@ -416,26 +416,41 @@ class AIMultimodalApp:
                             current_conf = conf
                             break
                 
-                # 手势稳定性检测
-                if current_gesture == stable_gesture:
-                    if stable_start_time is not None:
-                        stable_duration = current_time - stable_start_time
-                        if stable_duration >= stability_threshold and current_gesture != last_gesture:
-                            last_gesture = current_gesture
-                            self.stats["gesture_detections"] += 1
-                            
-                            gesture_data = {
-                                "gesture": current_gesture,
-                                "conf": current_conf,
-                                "ts": current_time,
-                                "stable_duration": stable_duration
-                            }
-                            
-                            print(f"🖐 手势检测: {current_gesture} (置信度: {current_conf:.2f})")
-                            multimodal_collector.update_gesture_data(gesture_data)
-                else:
-                    stable_gesture = current_gesture
-                    stable_start_time = current_time if current_gesture else None
+                # 手势稳定性检测 - 更新逻辑
+                if current_gesture: # A gesture is currently detected
+                    if current_gesture == stable_gesture: # Gesture is being held
+                        if stable_start_time is not None:
+                            stable_duration = current_time - stable_start_time
+                            if stable_duration >= stability_threshold: # Gesture is stable and held long enough
+                                if current_gesture != last_gesture: # Check if it's different from the last *processed* gesture for this hold period
+                                    # This is a new, stable gesture or the first time this held gesture is processed
+                                    self.stats["gesture_detections"] += 1
+                                    gesture_data = {
+                                        "gesture": current_gesture,
+                                        "conf": current_conf,
+                                        "ts": current_time,
+                                        "stable_duration": stable_duration
+                                    }
+                                    print(f"🖐 手势检测: {current_gesture} (置信度: {current_conf:.2f}, 持续: {stable_duration:.2f}s)")
+                                    multimodal_collector.update_gesture_data(gesture_data)
+                                    last_gesture = current_gesture # Mark as processed for this hold period
+                                # else: Gesture is same as last_gesture, and still being held, do not re-trigger
+                    else:
+                        # New gesture has appeared, or gesture changed from the one being tracked for stability
+                        stable_gesture = current_gesture
+                        stable_start_time = current_time # Start timer for this new candidate
+                        # last_gesture is not updated here. It only updates when a gesture is *processed*.
+                else: # No gesture detected in the current frame
+                    if stable_gesture is not None:
+                        # A gesture was previously active (being tracked for stability), but now it's gone.
+                        # This signifies the end of a gesture performance.
+                        # Reset last_gesture so that the *next* gesture, even if it's the same as the previous stable_gesture,
+                        # can be treated as a new instance if it becomes stable again.
+                        # This allows re-detection of the same gesture after a pause.
+                        last_gesture = None 
+                    
+                    stable_gesture = None # Reset stable_gesture as no gesture is currently detected
+                    stable_start_time = None # Reset stability timer
                 
         except Exception as e:
             print(f"❌ 视觉线程错误: {e}")

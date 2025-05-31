@@ -1164,5 +1164,1711 @@
     "success": true,
     "error_message": null,
     "context_data": null
+  },
+  {
+    "timestamp": "2025-05-31T14:55:22.743624",
+    "user_id": "default_user",
+    "session_id": "1395592f-2710-43ad-9c31-d2ab15de6031",
+    "interaction_type": "ai_analysis",
+    "modality": "multimodal",
+    "input_data": {
+      "modality": "multimodal",
+      "type": "ai_analysis",
+      "category": "system",
+      "gaze_data": {
+        "state": "right",
+        "duration": 3.2239320278167725,
+        "deviation": "severe",
+        "distraction_detected": true,
+        "waiting_for_confirmation": false
+      },
+      "gesture_data": {
+        "gesture": "none",
+        "confidence": 0.0,
+        "intent": "unknown"
+      },
+      "speech_data": {
+        "text": "",
+        "intent": "unknown",
+        "emotion": "neutral"
+      },
+      "user_id": "default_user",
+      "user_settings": {
+        "user_id": "default_user",
+        "interaction_stats": {
+          "most_used_gesture": "none",
+          "most_used_voice_command": "none",
+          "total_interactions": 0,
+          "gesture_stats": {},
+          "voice_stats": {}
+        },
+        "most_used_gesture": "none",
+        "most_used_voice_command": "none"
+      }
+    },
+    "ai_response": {
+      "confidence": 0.95,
+      "recommendation": "检测到您视线长时间偏离道路，请集中注意力驾驶。",
+      "reasoning": "眼动数据显示驾驶员视线严重偏离道路超过3秒，且未检测到任何手势或语音交互，表明驾驶员可能处于分心状态。根据安全优先原则，系统应立即提醒驾驶员注意道路安全。",
+      "action_code": "distract"
+    },
+    "confidence": 0.95,
+    "processing_time": 9.211025953292847,
+    "success": true,
+    "error_message": null,
+    "context_data": null
+  },
+  {
+    "timestamp": "2025-05-31T14:55:34.984377",
+    "user_id": "default_user",
+    "session_id": "1395592f-2710-43ad-9c31-d2ab15de6031",
+    "interaction_type": "ai_analysis",
+    "modality": "multimodal",
+    "input_data": {
+      "modality": "multimodal",
+      "type": "ai_analysis",
+      "category": "system",
+      "gaze_data": {
+        "state": "left",
+        "duration": 0.0,
+        "deviation": "normal",
+        "distraction_detected": false,
+        "waiting_for_confirmation": false
+      },
+      "gesture_data": {
+        "gesture": "Thumbs Up",
+        "confidence": 0.7102541327476501,
+        "intent": "confirm"
+      },
+      "speech_data": {
+        "text": "",
+        "intent": "unknown",
+        "emotion": "neutral"
+      },
+      "user_id": "default_user",
+      "user_settings": {
+        "user_id": "default_user",
+        "interaction_stats": {
+          "most_used_gesture": "none",
+          "most_used_voice_command": "none",
+          "total_interactions": 0,
+          "gesture_stats": {},
+          "voice_stats": {}
+        },
+        "most_used_gesture": "none",
+        "most_used_voice_command": "none"
+      }
+    },
+    "ai_response": {
+      "confidence": 0.71,
+      "recommendation": "感谢您恢复注意力，请继续保持专注驾驶。",
+      "reasoning": "驾驶员之前处于分心状态，但通过手势（Thumbs Up）确认已恢复注意力。眼动数据显示视线状态正常，没有持续偏离。语音数据未检测到有效信息。根据安全优先原则，确认驾驶员已恢复注意力后，给予正面鼓励并提醒保持专注。",
+      "action_code": "NoticeRoad"
+    },
+    "confidence": 0.71,
+    "processing_time": 7.408054828643799,
+    "success": true,
+    "error_message": null,
+    "context_data": null
+  },
+  {
+    "timestamp": "2025-05-31T14:55:42.895763",
+    "user_id": "default_user",
+    "session_id": "1395592f-2710-43ad-9c31-d2ab15de6031",
+    "interaction_type": "ai_analysis",
+    "modality": "multimodal",
+    "input_data": {
+      "modality": "multimodal",
+      "type": "ai_analysis",
+      "category": "system",
+      "gaze_data": {
+        "state": "left",
+        "duration": 7.71506929397583,
+        "deviation": "severe",
+        "distraction_detected": true,
+        "waiting_for_confirmation": false
+      },
+      "gesture_data": {
+        "gesture": "Thumbs Up",
+        "confidence": 0.7102541327476501,
+        "intent": "confirm"
+      },
+      "speech_data": {
+        "text": "",
+        "intent": "unknown",
+        "emotion": "neutral"
+      },
+      "user_id": "default_user",
+      "user_settings": {
+        "user_id": "default_user",
+        "interaction_stats": {
+          "most_used_gesture": "none",
+          "most_used_voice_command": "none",
+          "total_interactions": 0,
+          "gesture_stats": {},
+          "voice_stats": {}
+        },
+        "most_used_gesture": "none",
+        "most_used_voice_command": "none"
+      }
+    },
+    "ai_response": {
+      "confidence": 0.92,
+      "recommendation": "检测到您视线长时间偏离道路，请立即集中注意力观察前方路况。",
+      "reasoning": "眼动数据显示驾驶员视线严重偏离道路长达7.7秒，属于高风险分心驾驶行为。虽然手势检测到确认意图(Thumbs Up)，但语音数据未检测到有效交互。根据安全优先原则，必须立即发出分心警告。手势数据可能表示驾驶员正在操作其他设备，进一步增加了风险系数。",
+      "action_code": "distract"
+    },
+    "confidence": 0.92,
+    "processing_time": 7.8601460456848145,
+    "success": true,
+    "error_message": null,
+    "context_data": null
+  },
+  {
+    "timestamp": "2025-05-31T15:06:22.927760",
+    "user_id": "default_user",
+    "session_id": "b91c2b9e-0331-4167-a1af-b0b3cb2ac695",
+    "interaction_type": "ai_analysis",
+    "modality": "multimodal",
+    "input_data": {
+      "modality": "multimodal",
+      "type": "ai_analysis",
+      "category": "system",
+      "gaze_data": {
+        "state": "left",
+        "duration": 3.2720091342926025,
+        "deviation": "severe",
+        "distraction_detected": true,
+        "waiting_for_confirmation": false
+      },
+      "gesture_data": {
+        "gesture": "none",
+        "confidence": 0.0,
+        "intent": "unknown"
+      },
+      "speech_data": {
+        "text": "",
+        "intent": "unknown",
+        "emotion": "neutral"
+      },
+      "user_id": "default_user",
+      "user_settings": {
+        "user_id": "default_user",
+        "interaction_stats": {
+          "most_used_gesture": "none",
+          "most_used_voice_command": "none",
+          "total_interactions": 0,
+          "gesture_stats": {},
+          "voice_stats": {}
+        },
+        "most_used_gesture": "none",
+        "most_used_voice_command": "none"
+      }
+    },
+    "ai_response": {
+      "confidence": 0.95,
+      "recommendation": "检测到您视线长时间偏离道路，请立即集中注意力观察前方路况。",
+      "reasoning": "眼动数据显示驾驶员视线严重左偏且持续时间达3.3秒，手势和语音数据均未检测到有效交互行为，符合分心驾驶特征。根据安全优先原则，系统应立即发出分心警告。",
+      "action_code": "distract"
+    },
+    "confidence": 0.95,
+    "processing_time": 7.255299091339111,
+    "success": true,
+    "error_message": null,
+    "context_data": null
+  },
+  {
+    "timestamp": "2025-05-31T15:06:41.763530",
+    "user_id": "default_user",
+    "session_id": "b91c2b9e-0331-4167-a1af-b0b3cb2ac695",
+    "interaction_type": "ai_analysis",
+    "modality": "multimodal",
+    "input_data": {
+      "modality": "multimodal",
+      "type": "ai_analysis",
+      "category": "system",
+      "gaze_data": {
+        "state": "center",
+        "duration": 8.777297258377075,
+        "deviation": "normal",
+        "distraction_detected": false,
+        "waiting_for_confirmation": false
+      },
+      "gesture_data": {
+        "gesture": "Thumbs Up",
+        "confidence": 0.7231144309043884,
+        "intent": "confirm"
+      },
+      "speech_data": {
+        "text": "",
+        "intent": "unknown",
+        "emotion": "neutral"
+      },
+      "user_id": "default_user",
+      "user_settings": {
+        "user_id": "default_user",
+        "interaction_stats": {
+          "most_used_gesture": "none",
+          "most_used_voice_command": "none",
+          "total_interactions": 0,
+          "gesture_stats": {},
+          "voice_stats": {}
+        },
+        "most_used_gesture": "none",
+        "most_used_voice_command": "none"
+      }
+    },
+    "ai_response": {
+      "confidence": 0.72,
+      "recommendation": "感谢您恢复注意力，请继续保持专注驾驶。",
+      "reasoning": "根据眼动数据，驾驶员的视线已保持在中心位置8.8秒，偏离程度正常，表明注意力已恢复。手势数据检测到'Thumbs Up'手势，置信度为0.72，意图为确认，这与注意力恢复的上下文相符。语音数据无有效输入，情感倾向为中性。综合多模态数据和特殊上下文（驾驶员之前处于分心状态，现已通过手势确认恢复注意力），判断驾驶员已恢复注意力，因此给出正面鼓励并提醒继续保持专注驾驶。",
+      "action_code": "NoticeRoad"
+    },
+    "confidence": 0.72,
+    "processing_time": 9.198569059371948,
+    "success": true,
+    "error_message": null,
+    "context_data": null
+  },
+  {
+    "timestamp": "2025-05-31T15:13:04.972848",
+    "user_id": "default_user",
+    "session_id": "2e7bbdd2-6ec7-43f8-85f4-a08b85b39368",
+    "interaction_type": "ai_analysis",
+    "modality": "multimodal",
+    "input_data": {
+      "modality": "multimodal",
+      "type": "ai_analysis",
+      "category": "system",
+      "gaze_data": {
+        "state": "left",
+        "duration": 3.2903058528900146,
+        "deviation": "severe",
+        "distraction_detected": true,
+        "waiting_for_confirmation": false
+      },
+      "gesture_data": {
+        "gesture": "none",
+        "confidence": 0.0,
+        "intent": "unknown"
+      },
+      "speech_data": {
+        "text": "",
+        "intent": "unknown",
+        "emotion": "neutral"
+      },
+      "user_id": "default_user",
+      "user_settings": {
+        "user_id": "default_user",
+        "interaction_stats": {
+          "most_used_gesture": "none",
+          "most_used_voice_command": "none",
+          "total_interactions": 0,
+          "gesture_stats": {},
+          "voice_stats": {}
+        },
+        "most_used_gesture": "none",
+        "most_used_voice_command": "none"
+      }
+    },
+    "ai_response": {
+      "confidence": 0.95,
+      "recommendation": "检测到您视线长时间偏离道路，请集中注意力驾驶。",
+      "reasoning": "眼动数据显示驾驶员视线严重偏离道路左侧且持续时间长达3.3秒，手势和语音数据均未检测到任何交互行为，表明驾驶员处于明显分心状态。根据安全优先原则，系统必须立即发出分心警告。",
+      "action_code": "distract"
+    },
+    "confidence": 0.95,
+    "processing_time": 7.871614217758179,
+    "success": true,
+    "error_message": null,
+    "context_data": null
+  },
+  {
+    "timestamp": "2025-05-31T15:13:19.380198",
+    "user_id": "default_user",
+    "session_id": "2e7bbdd2-6ec7-43f8-85f4-a08b85b39368",
+    "interaction_type": "ai_analysis",
+    "modality": "multimodal",
+    "input_data": {
+      "modality": "multimodal",
+      "type": "ai_analysis",
+      "category": "system",
+      "gaze_data": {
+        "state": "center",
+        "duration": 1.5566895008087158,
+        "deviation": "normal",
+        "distraction_detected": false,
+        "waiting_for_confirmation": false
+      },
+      "gesture_data": {
+        "gesture": "Thumbs Up",
+        "confidence": 0.7182374000549316,
+        "intent": "confirm"
+      },
+      "speech_data": {
+        "text": "",
+        "intent": "unknown",
+        "emotion": "neutral"
+      },
+      "user_id": "default_user",
+      "user_settings": {
+        "user_id": "default_user",
+        "interaction_stats": {
+          "most_used_gesture": "none",
+          "most_used_voice_command": "none",
+          "total_interactions": 0,
+          "gesture_stats": {},
+          "voice_stats": {}
+        },
+        "most_used_gesture": "none",
+        "most_used_voice_command": "none"
+      }
+    },
+    "ai_response": {
+      "confidence": 0.72,
+      "recommendation": "感谢您确认注意力已恢复，请继续保持专注驾驶。",
+      "reasoning": "根据眼动数据，驾驶员的视线状态为'center'且持续时间为1.6秒，偏离程度为'normal'，表明驾驶员当前注意力集中在道路上。手势数据检测到'Thumbs Up'手势，置信度为0.72，意图为'confirm'，这与特殊上下文中提到的'驾驶员之前处于分心状态，现已通过手势确认恢复注意力'一致。语音数据未检测到有效输入，情感倾向为'neutral'，不影响当前决策。综合以上多模态数据，可以确认驾驶员已从分心状态恢复，因此执行'NoticeRoad'指令，并提供正面鼓励的语音提示。",
+      "action_code": "NoticeRoad"
+    },
+    "confidence": 0.72,
+    "processing_time": 12.182931423187256,
+    "success": true,
+    "error_message": null,
+    "context_data": null
+  },
+  {
+    "timestamp": "2025-05-31T15:13:40.889369",
+    "user_id": "default_user",
+    "session_id": "2e7bbdd2-6ec7-43f8-85f4-a08b85b39368",
+    "interaction_type": "ai_analysis",
+    "modality": "multimodal",
+    "input_data": {
+      "modality": "multimodal",
+      "type": "ai_analysis",
+      "category": "system",
+      "gaze_data": {
+        "state": "left",
+        "duration": 3.157184600830078,
+        "deviation": "severe",
+        "distraction_detected": true,
+        "waiting_for_confirmation": false
+      },
+      "gesture_data": {
+        "gesture": "Thumbs Up",
+        "confidence": 0.7182374000549316,
+        "intent": "confirm"
+      },
+      "speech_data": {
+        "text": "",
+        "intent": "unknown",
+        "emotion": "neutral"
+      },
+      "user_id": "default_user",
+      "user_settings": {
+        "user_id": "default_user",
+        "interaction_stats": {
+          "most_used_gesture": "none",
+          "most_used_voice_command": "none",
+          "total_interactions": 0,
+          "gesture_stats": {},
+          "voice_stats": {}
+        },
+        "most_used_gesture": "none",
+        "most_used_voice_command": "none"
+      }
+    },
+    "ai_response": {
+      "confidence": 0.88,
+      "recommendation": "检测到您视线长时间偏离道路，请集中注意力驾驶。",
+      "reasoning": "根据眼动数据分析，驾驶员视线严重偏离道路且持续时间超过3秒，存在明显的分心驾驶风险。虽然手势数据显示驾驶员可能在进行确认动作（Thumbs Up），但手势置信度仅为0.72且语音数据无有效输入，不足以抵消分心检测的优先级。根据安全优先原则，系统必须优先提醒驾驶员注意道路安全。",
+      "action_code": "distract"
+    },
+    "confidence": 0.88,
+    "processing_time": 8.162099361419678,
+    "success": true,
+    "error_message": null,
+    "context_data": null
+  },
+  {
+    "timestamp": "2025-05-31T15:14:14.943207",
+    "user_id": "default_user",
+    "session_id": "2e7bbdd2-6ec7-43f8-85f4-a08b85b39368",
+    "interaction_type": "ai_analysis",
+    "modality": "multimodal",
+    "input_data": {
+      "modality": "multimodal",
+      "type": "ai_analysis",
+      "category": "system",
+      "gaze_data": {
+        "state": "center",
+        "duration": 8.8597252368927,
+        "deviation": "normal",
+        "distraction_detected": true,
+        "waiting_for_confirmation": true
+      },
+      "gesture_data": {
+        "gesture": "Open",
+        "confidence": 0.727519690990448,
+        "intent": "attention"
+      },
+      "speech_data": {
+        "text": "",
+        "intent": "unknown",
+        "emotion": "neutral"
+      },
+      "user_id": "default_user",
+      "user_settings": {
+        "user_id": "default_user",
+        "interaction_stats": {
+          "most_used_gesture": "none",
+          "most_used_voice_command": "none",
+          "total_interactions": 0,
+          "gesture_stats": {},
+          "voice_stats": {}
+        },
+        "most_used_gesture": "none",
+        "most_used_voice_command": "none"
+      }
+    },
+    "ai_response": {
+      "confidence": 0.9,
+      "recommendation": "您当前注意力集中，请继续保持安全驾驶。",
+      "reasoning": "根据眼动数据，视线状态为center且持续时间为8.9秒，偏离程度为normal，表明驾驶员注意力集中在道路上。手势数据检测到Open手势，置信度为0.73，意图为attention，进一步确认驾驶员处于专注状态。语音数据未检测到有效输入，情感倾向为neutral，无异常。综合多模态数据，驾驶员当前状态良好，无需额外操作，建议继续保持安全驾驶。",
+      "action_code": "NoticeRoad"
+    },
+    "confidence": 0.9,
+    "processing_time": 8.08681869506836,
+    "success": true,
+    "error_message": null,
+    "context_data": null
+  },
+  {
+    "timestamp": "2025-05-31T15:18:27.024369",
+    "user_id": "default_user",
+    "session_id": "f6bb21b9-74cb-4d80-9781-89d2159969a3",
+    "interaction_type": "ai_analysis",
+    "modality": "multimodal",
+    "input_data": {
+      "modality": "multimodal",
+      "type": "ai_analysis",
+      "category": "system",
+      "gaze_data": {
+        "state": "right",
+        "duration": 3.209256410598755,
+        "deviation": "severe",
+        "distraction_detected": true,
+        "waiting_for_confirmation": false
+      },
+      "gesture_data": {
+        "gesture": "none",
+        "confidence": 0.0,
+        "intent": "unknown"
+      },
+      "speech_data": {
+        "text": "",
+        "intent": "unknown",
+        "emotion": "neutral"
+      },
+      "user_id": "default_user",
+      "user_settings": {
+        "user_id": "default_user",
+        "interaction_stats": {
+          "most_used_gesture": "none",
+          "most_used_voice_command": "none",
+          "total_interactions": 0,
+          "gesture_stats": {},
+          "voice_stats": {}
+        },
+        "most_used_gesture": "none",
+        "most_used_voice_command": "none"
+      }
+    },
+    "ai_response": {
+      "confidence": 0.95,
+      "recommendation": "检测到您视线长时间偏离道路，请集中注意力驾驶。",
+      "reasoning": "根据眼动数据分析，驾驶员视线严重偏离道路且持续时间超过3秒，手势和语音数据未检测到任何交互意图，符合分心驾驶特征。根据安全优先原则，系统应优先提醒驾驶员注意道路安全。",
+      "action_code": "distract"
+    },
+    "confidence": 0.95,
+    "processing_time": 7.619104862213135,
+    "success": true,
+    "error_message": null,
+    "context_data": null
+  },
+  {
+    "timestamp": "2025-05-31T15:18:46.831398",
+    "user_id": "default_user",
+    "session_id": "f6bb21b9-74cb-4d80-9781-89d2159969a3",
+    "interaction_type": "ai_analysis",
+    "modality": "multimodal",
+    "input_data": {
+      "modality": "multimodal",
+      "type": "ai_analysis",
+      "category": "system",
+      "gaze_data": {
+        "state": "center",
+        "duration": 0.0,
+        "deviation": "normal",
+        "distraction_detected": false,
+        "waiting_for_confirmation": false
+      },
+      "gesture_data": {
+        "gesture": "Thumbs Up",
+        "confidence": 0.8223185539245605,
+        "intent": "confirm"
+      },
+      "speech_data": {
+        "text": "",
+        "intent": "unknown",
+        "emotion": "neutral"
+      },
+      "user_id": "default_user",
+      "user_settings": {
+        "user_id": "default_user",
+        "interaction_stats": {
+          "most_used_gesture": "none",
+          "most_used_voice_command": "none",
+          "total_interactions": 0,
+          "gesture_stats": {},
+          "voice_stats": {}
+        },
+        "most_used_gesture": "none",
+        "most_used_voice_command": "none"
+      }
+    },
+    "ai_response": {
+      "confidence": 0.82,
+      "recommendation": "感谢您确认注意力已恢复，请继续保持专注驾驶。",
+      "reasoning": "根据手势数据检测到驾驶员做出了'Thumbs Up'手势，且手势意图为'confirm'，结合眼动数据显示视线状态为'center'且偏离程度为'normal'，可以判断驾驶员已从分心状态恢复并确认注意力集中在道路上。语音数据为空且情感倾向为中性，不影响当前决策。根据安全优先原则，给予正面鼓励并确认驾驶员已注意道路。",
+      "action_code": "NoticeRoad"
+    },
+    "confidence": 0.82,
+    "processing_time": 10.624793291091919,
+    "success": true,
+    "error_message": null,
+    "context_data": null
+  },
+  {
+    "timestamp": "2025-05-31T15:22:28.949868",
+    "user_id": "default_user",
+    "session_id": "67f4e54c-7022-4039-b005-1b4eab330ee8",
+    "interaction_type": "ai_analysis",
+    "modality": "multimodal",
+    "input_data": {
+      "modality": "multimodal",
+      "type": "ai_analysis",
+      "category": "system",
+      "gaze_data": {
+        "state": "left",
+        "duration": 3.2653067111968994,
+        "deviation": "severe",
+        "distraction_detected": true,
+        "waiting_for_confirmation": false
+      },
+      "gesture_data": {
+        "gesture": "none",
+        "confidence": 0.0,
+        "intent": "unknown"
+      },
+      "speech_data": {
+        "text": "",
+        "intent": "unknown",
+        "emotion": "neutral"
+      },
+      "user_id": "default_user",
+      "user_settings": {
+        "user_id": "default_user",
+        "interaction_stats": {
+          "most_used_gesture": "none",
+          "most_used_voice_command": "none",
+          "total_interactions": 0,
+          "gesture_stats": {},
+          "voice_stats": {}
+        },
+        "most_used_gesture": "none",
+        "most_used_voice_command": "none"
+      }
+    },
+    "ai_response": {
+      "confidence": 0.9,
+      "recommendation": "检测到您视线长时间偏离道路，请集中注意力驾驶。",
+      "reasoning": "眼动数据显示驾驶员视线严重偏离道路长达3.3秒，手势和语音数据未检测到任何交互行为，综合判断为分心驾驶状态。根据安全优先原则，系统应立即提醒驾驶员注意道路安全。",
+      "action_code": "distract"
+    },
+    "confidence": 0.9,
+    "processing_time": 8.019119024276733,
+    "success": true,
+    "error_message": null,
+    "context_data": null
+  },
+  {
+    "timestamp": "2025-05-31T15:22:53.935064",
+    "user_id": "default_user",
+    "session_id": "67f4e54c-7022-4039-b005-1b4eab330ee8",
+    "interaction_type": "ai_analysis",
+    "modality": "multimodal",
+    "input_data": {
+      "modality": "multimodal",
+      "type": "ai_analysis",
+      "category": "system",
+      "gaze_data": {
+        "state": "left",
+        "duration": 6.13869047164917,
+        "deviation": "severe",
+        "distraction_detected": false,
+        "waiting_for_confirmation": false
+      },
+      "gesture_data": {
+        "gesture": "none",
+        "confidence": 0.0,
+        "intent": "unknown"
+      },
+      "speech_data": {
+        "text": "我已恢复,我已注意到道路了",
+        "intent": "unknown",
+        "emotion": "neutral"
+      },
+      "user_id": "default_user",
+      "user_settings": {
+        "user_id": "default_user",
+        "interaction_stats": {
+          "most_used_gesture": "none",
+          "most_used_voice_command": "none",
+          "total_interactions": 0,
+          "gesture_stats": {},
+          "voice_stats": {}
+        },
+        "most_used_gesture": "none",
+        "most_used_voice_command": "none"
+      }
+    },
+    "ai_response": {
+      "confidence": 0.9,
+      "recommendation": "很高兴您已恢复注意力，请继续保持专注驾驶。",
+      "reasoning": "根据眼动数据，驾驶员之前视线严重偏离道路长达6.1秒，表明存在分心状态。但通过语音确认，驾驶员明确表示'我已恢复,我已注意到道路了'，且情感倾向为中性，符合注意力恢复的特征。根据安全优先原则，系统应确认驾驶员已恢复注意力并给予正面鼓励。",
+      "action_code": "NoticeRoad"
+    },
+    "confidence": 0.9,
+    "processing_time": 7.968203544616699,
+    "success": true,
+    "error_message": null,
+    "context_data": null
+  },
+  {
+    "timestamp": "2025-05-31T15:23:01.388165",
+    "user_id": "default_user",
+    "session_id": "67f4e54c-7022-4039-b005-1b4eab330ee8",
+    "interaction_type": "ai_analysis",
+    "modality": "multimodal",
+    "input_data": {
+      "modality": "multimodal",
+      "type": "ai_analysis",
+      "category": "system",
+      "gaze_data": {
+        "state": "left",
+        "duration": 14.572412490844727,
+        "deviation": "severe",
+        "distraction_detected": true,
+        "waiting_for_confirmation": false
+      },
+      "gesture_data": {
+        "gesture": "none",
+        "confidence": 0.0,
+        "intent": "unknown"
+      },
+      "speech_data": {
+        "text": "我已恢复,我已注意到道路了",
+        "intent": "unknown",
+        "emotion": "neutral"
+      },
+      "user_id": "default_user",
+      "user_settings": {
+        "user_id": "default_user",
+        "interaction_stats": {
+          "most_used_gesture": "none",
+          "most_used_voice_command": "none",
+          "total_interactions": 0,
+          "gesture_stats": {},
+          "voice_stats": {}
+        },
+        "most_used_gesture": "none",
+        "most_used_voice_command": "none"
+      }
+    },
+    "ai_response": {
+      "confidence": 0.9,
+      "recommendation": "感谢您重新关注道路，请继续保持专注驾驶以确保安全。",
+      "reasoning": "系统检测到驾驶员视线严重偏离道路长达14.6秒，但随后语音数据表明驾驶员已恢复注意力并注意到道路。根据安全优先原则，确认驾驶员已恢复注意力后，给予正面鼓励并提醒保持专注。",
+      "action_code": "NoticeRoad"
+    },
+    "confidence": 0.9,
+    "processing_time": 7.419442653656006,
+    "success": true,
+    "error_message": null,
+    "context_data": null
+  },
+  {
+    "timestamp": "2025-05-31T15:23:13.810698",
+    "user_id": "default_user",
+    "session_id": "67f4e54c-7022-4039-b005-1b4eab330ee8",
+    "interaction_type": "ai_analysis",
+    "modality": "multimodal",
+    "input_data": {
+      "modality": "multimodal",
+      "type": "ai_analysis",
+      "category": "system",
+      "gaze_data": {
+        "state": "left",
+        "duration": 3.4853618144989014,
+        "deviation": "severe",
+        "distraction_detected": false,
+        "waiting_for_confirmation": false
+      },
+      "gesture_data": {
+        "gesture": "Thumbs Up",
+        "confidence": 0.7505713105201721,
+        "intent": "confirm"
+      },
+      "speech_data": {
+        "text": "我已恢复,我已注意到道路了",
+        "intent": "unknown",
+        "emotion": "neutral"
+      },
+      "user_id": "default_user",
+      "user_settings": {
+        "user_id": "default_user",
+        "interaction_stats": {
+          "most_used_gesture": "none",
+          "most_used_voice_command": "none",
+          "total_interactions": 0,
+          "gesture_stats": {},
+          "voice_stats": {}
+        },
+        "most_used_gesture": "none",
+        "most_used_voice_command": "none"
+      }
+    },
+    "ai_response": {
+      "confidence": 0.8,
+      "recommendation": "很高兴您已恢复注意力，请继续保持专注驾驶。",
+      "reasoning": "根据眼动数据显示驾驶员之前处于严重偏离状态，但随后检测到确认手势（Thumbs Up）和语音确认（'我已恢复,我已注意到道路了'），综合判断驾驶员已从分心状态恢复。手势置信度0.75和中性情感倾向的语音进一步支持这一判断。因此系统确认注意力恢复状态，并给予正面反馈。",
+      "action_code": "NoticeRoad"
+    },
+    "confidence": 0.8,
+    "processing_time": 8.32725191116333,
+    "success": true,
+    "error_message": null,
+    "context_data": null
+  },
+  {
+    "timestamp": "2025-05-31T15:23:22.000767",
+    "user_id": "default_user",
+    "session_id": "67f4e54c-7022-4039-b005-1b4eab330ee8",
+    "interaction_type": "ai_analysis",
+    "modality": "multimodal",
+    "input_data": {
+      "modality": "multimodal",
+      "type": "ai_analysis",
+      "category": "system",
+      "gaze_data": {
+        "state": "left",
+        "duration": 12.000046491622925,
+        "deviation": "severe",
+        "distraction_detected": true,
+        "waiting_for_confirmation": false
+      },
+      "gesture_data": {
+        "gesture": "Thumbs Up",
+        "confidence": 0.7505713105201721,
+        "intent": "confirm"
+      },
+      "speech_data": {
+        "text": "我已恢复,我已注意到道路了",
+        "intent": "unknown",
+        "emotion": "neutral"
+      },
+      "user_id": "default_user",
+      "user_settings": {
+        "user_id": "default_user",
+        "interaction_stats": {
+          "most_used_gesture": "none",
+          "most_used_voice_command": "none",
+          "total_interactions": 0,
+          "gesture_stats": {},
+          "voice_stats": {}
+        },
+        "most_used_gesture": "none",
+        "most_used_voice_command": "none"
+      }
+    },
+    "ai_response": {
+      "confidence": 0.9,
+      "recommendation": "感谢您重新关注道路，请继续保持专注驾驶。",
+      "reasoning": "根据眼动数据，驾驶员视线严重偏离道路长达12秒，但随后通过手势（Thumbs Up）和语音（'我已恢复,我已注意到道路了'）确认已恢复注意力。综合多模态数据，驾驶员已主动表明恢复专注，因此系统确认驾驶员已注意道路，并给予正面反馈。",
+      "action_code": "NoticeRoad"
+    },
+    "confidence": 0.9,
+    "processing_time": 8.072938680648804,
+    "success": true,
+    "error_message": null,
+    "context_data": null
+  },
+  {
+    "timestamp": "2025-05-31T15:23:37.573661",
+    "user_id": "default_user",
+    "session_id": "67f4e54c-7022-4039-b005-1b4eab330ee8",
+    "interaction_type": "ai_analysis",
+    "modality": "multimodal",
+    "input_data": {
+      "modality": "multimodal",
+      "type": "ai_analysis",
+      "category": "music",
+      "gaze_data": {
+        "state": "left",
+        "duration": 28.467288494110107,
+        "deviation": "severe",
+        "distraction_detected": true,
+        "waiting_for_confirmation": false
+      },
+      "gesture_data": {
+        "gesture": "Thumbs Up",
+        "confidence": 0.7505713105201721,
+        "intent": "confirm"
+      },
+      "speech_data": {
+        "text": "空调和音乐",
+        "intent": "unknown",
+        "emotion": "neutral"
+      },
+      "user_id": "default_user",
+      "user_settings": {
+        "user_id": "default_user",
+        "interaction_stats": {
+          "most_used_gesture": "none",
+          "most_used_voice_command": "none",
+          "total_interactions": 0,
+          "gesture_stats": {},
+          "voice_stats": {}
+        },
+        "most_used_gesture": "none",
+        "most_used_voice_command": "none"
+      }
+    },
+    "ai_response": {
+      "confidence": 0.9,
+      "recommendation": "检测到您长时间视线偏离道路，请集中注意力驾驶。",
+      "reasoning": "眼动数据显示视线严重偏离道路且持续28.5秒，存在严重安全隐患。虽然手势和语音数据表明用户可能想操作空调和音乐，但安全优先级更高，应优先提醒注意道路。",
+      "action_code": "distract"
+    },
+    "confidence": 0.9,
+    "processing_time": 7.109894752502441,
+    "success": true,
+    "error_message": null,
+    "context_data": null
+  },
+  {
+    "timestamp": "2025-05-31T15:24:10.059443",
+    "user_id": "default_user",
+    "session_id": "67f4e54c-7022-4039-b005-1b4eab330ee8",
+    "interaction_type": "ai_analysis",
+    "modality": "multimodal",
+    "input_data": {
+      "modality": "multimodal",
+      "type": "ai_analysis",
+      "category": "system",
+      "gaze_data": {
+        "state": "left",
+        "duration": 0.5260028839111328,
+        "deviation": "normal",
+        "distraction_detected": true,
+        "waiting_for_confirmation": true
+      },
+      "gesture_data": {
+        "gesture": "Thumbs Up",
+        "confidence": 0.7505713105201721,
+        "intent": "confirm"
+      },
+      "speech_data": {
+        "text": "我已经恢复了,不用再告诉我注意力分散",
+        "intent": "unknown",
+        "emotion": "negative"
+      },
+      "user_id": "default_user",
+      "user_settings": {
+        "user_id": "default_user",
+        "interaction_stats": {
+          "most_used_gesture": "none",
+          "most_used_voice_command": "none",
+          "total_interactions": 0,
+          "gesture_stats": {},
+          "voice_stats": {}
+        },
+        "most_used_gesture": "none",
+        "most_used_voice_command": "none"
+      }
+    },
+    "ai_response": {
+      "confidence": 0.8,
+      "recommendation": "很高兴您已恢复注意力，请继续保持专注驾驶。",
+      "reasoning": "根据眼动数据，驾驶员视线已恢复正常且持续时间较短；手势数据检测到确认意图的'Thumbs Up'手势；语音数据表明驾驶员已主动声明恢复注意力且情感倾向为负面（可能对持续提醒感到不满）。综合分析表明驾驶员已从分心状态恢复，系统应停止分心提醒并给予正面反馈。",
+      "action_code": "NoticeRoad"
+    },
+    "confidence": 0.8,
+    "processing_time": 10.393122434616089,
+    "success": true,
+    "error_message": null,
+    "context_data": null
+  },
+  {
+    "timestamp": "2025-05-31T15:27:03.016259",
+    "user_id": "default_user",
+    "session_id": "4a5e3f73-c6c9-4e85-9390-966a7dc21e2e",
+    "interaction_type": "ai_analysis",
+    "modality": "multimodal",
+    "input_data": {
+      "modality": "multimodal",
+      "type": "ai_analysis",
+      "category": "system",
+      "gaze_data": {
+        "state": "left",
+        "duration": 3.2280030250549316,
+        "deviation": "severe",
+        "distraction_detected": true,
+        "waiting_for_confirmation": false
+      },
+      "gesture_data": {
+        "gesture": "none",
+        "confidence": 0.0,
+        "intent": "unknown"
+      },
+      "speech_data": {
+        "text": "",
+        "intent": "unknown",
+        "emotion": "neutral"
+      },
+      "user_id": "default_user",
+      "user_settings": {
+        "user_id": "default_user",
+        "interaction_stats": {
+          "most_used_gesture": "none",
+          "most_used_voice_command": "none",
+          "total_interactions": 0,
+          "gesture_stats": {},
+          "voice_stats": {}
+        },
+        "most_used_gesture": "none",
+        "most_used_voice_command": "none"
+      }
+    },
+    "ai_response": {
+      "confidence": 0.95,
+      "recommendation": "检测到您的视线长时间偏离道路，请集中注意力驾驶。",
+      "reasoning": "根据眼动数据分析，驾驶员视线严重偏离道路且持续时间超过3秒，手势和语音数据未检测到任何交互意图，表明驾驶员处于分心状态。根据安全优先原则，系统应立即提醒驾驶员注意道路安全。",
+      "action_code": "distract"
+    },
+    "confidence": 0.95,
+    "processing_time": 7.569867849349976,
+    "success": true,
+    "error_message": null,
+    "context_data": null
+  },
+  {
+    "timestamp": "2025-05-31T15:27:13.152920",
+    "user_id": "default_user",
+    "session_id": "4a5e3f73-c6c9-4e85-9390-966a7dc21e2e",
+    "interaction_type": "ai_analysis",
+    "modality": "multimodal",
+    "input_data": {
+      "modality": "multimodal",
+      "type": "ai_analysis",
+      "category": "music",
+      "gaze_data": {
+        "state": "left",
+        "duration": 11.565391063690186,
+        "deviation": "severe",
+        "distraction_detected": true,
+        "waiting_for_confirmation": false
+      },
+      "gesture_data": {
+        "gesture": "none",
+        "confidence": 0.0,
+        "intent": "unknown"
+      },
+      "speech_data": {
+        "text": "放点音乐打开空调",
+        "intent": "unknown",
+        "emotion": "neutral"
+      },
+      "user_id": "default_user",
+      "user_settings": {
+        "user_id": "default_user",
+        "interaction_stats": {
+          "most_used_gesture": "none",
+          "most_used_voice_command": "none",
+          "total_interactions": 0,
+          "gesture_stats": {},
+          "voice_stats": {}
+        },
+        "most_used_gesture": "none",
+        "most_used_voice_command": "none"
+      }
+    },
+    "ai_response": {
+      "confidence": 0.95,
+      "recommendation": "检测到您视线严重偏离道路，请立即集中注意力驾驶。",
+      "reasoning": "根据眼动数据分析，驾驶员视线严重偏离道路且持续时间长达11.6秒，属于严重分心状态。虽然语音指令识别到'放点音乐打开空调'的需求，但当前首要任务是确保驾驶安全。根据安全优先原则，必须优先处理分心驾驶情况。待驾驶员视线恢复正常后，再处理空调和音乐请求。",
+      "action_code": "distract"
+    },
+    "confidence": 0.95,
+    "processing_time": 9.092379331588745,
+    "success": true,
+    "error_message": null,
+    "context_data": null
+  },
+  {
+    "timestamp": "2025-05-31T15:27:27.037190",
+    "user_id": "default_user",
+    "session_id": "4a5e3f73-c6c9-4e85-9390-966a7dc21e2e",
+    "interaction_type": "ai_analysis_error",
+    "modality": "multimodal",
+    "input_data": {
+      "modality": "multimodal",
+      "type": "ai_analysis_error",
+      "category": "music",
+      "error": "the JSON object must be str, bytes or bytearray, not dict",
+      "user_id": "default_user"
+    },
+    "ai_response": null,
+    "confidence": null,
+    "processing_time": 10.439550399780273,
+    "success": false,
+    "error_message": "the JSON object must be str, bytes or bytearray, not dict",
+    "context_data": null
+  },
+  {
+    "timestamp": "2025-05-31T15:27:35.891073",
+    "user_id": "default_user",
+    "session_id": "4a5e3f73-c6c9-4e85-9390-966a7dc21e2e",
+    "interaction_type": "ai_analysis",
+    "modality": "multimodal",
+    "input_data": {
+      "modality": "multimodal",
+      "type": "ai_analysis",
+      "category": "music",
+      "gaze_data": {
+        "state": "left",
+        "duration": 12.394232511520386,
+        "deviation": "severe",
+        "distraction_detected": true,
+        "waiting_for_confirmation": false
+      },
+      "gesture_data": {
+        "gesture": "Thumbs Up",
+        "confidence": 0.8024174571037292,
+        "intent": "confirm"
+      },
+      "speech_data": {
+        "text": "放点音乐打开空调",
+        "intent": "unknown",
+        "emotion": "neutral"
+      },
+      "user_id": "default_user",
+      "user_settings": {
+        "user_id": "default_user",
+        "interaction_stats": {
+          "most_used_gesture": "none",
+          "most_used_voice_command": "none",
+          "total_interactions": 0,
+          "gesture_stats": {},
+          "voice_stats": {}
+        },
+        "most_used_gesture": "none",
+        "most_used_voice_command": "none"
+      }
+    },
+    "ai_response": {
+      "confidence": 0.9,
+      "recommendation": "检测到您视线长时间偏离道路，请集中注意力驾驶。",
+      "reasoning": "根据眼动数据，驾驶员视线严重偏离道路且持续时间较长（12.4秒），存在分心驾驶风险。虽然手势数据检测到确认意图（Thumbs Up）且语音请求了音乐和空调操作，但安全优先级高于娱乐需求。因此优先触发分心警告，待驾驶员视线恢复后再处理其他请求。",
+      "action_code": "distract"
+    },
+    "confidence": 0.9,
+    "processing_time": 8.772428512573242,
+    "success": true,
+    "error_message": null,
+    "context_data": null
+  },
+  {
+    "timestamp": "2025-05-31T15:28:19.308497",
+    "user_id": "default_user",
+    "session_id": "4a5e3f73-c6c9-4e85-9390-966a7dc21e2e",
+    "interaction_type": "ai_analysis",
+    "modality": "multimodal",
+    "input_data": {
+      "modality": "multimodal",
+      "type": "ai_analysis",
+      "category": "system",
+      "gaze_data": {
+        "state": "left",
+        "duration": 0.0,
+        "deviation": "normal",
+        "distraction_detected": true,
+        "waiting_for_confirmation": true
+      },
+      "gesture_data": {
+        "gesture": "Thumbs Up",
+        "confidence": 0.8024174571037292,
+        "intent": "confirm"
+      },
+      "speech_data": {
+        "text": "回憶恢復,不用再提醒我注意点分散",
+        "intent": "unknown",
+        "emotion": "negative"
+      },
+      "user_id": "default_user",
+      "user_settings": {
+        "user_id": "default_user",
+        "interaction_stats": {
+          "most_used_gesture": "none",
+          "most_used_voice_command": "none",
+          "total_interactions": 0,
+          "gesture_stats": {},
+          "voice_stats": {}
+        },
+        "most_used_gesture": "none",
+        "most_used_voice_command": "none"
+      }
+    },
+    "ai_response": {
+      "confidence": 0.9,
+      "recommendation": "已收到您的确认，将继续保持安全驾驶模式。",
+      "reasoning": "根据眼动数据，视线状态为left但持续时间为0.0秒且偏离程度为normal，表明驾驶员未长时间分心。手势数据检测到Thumbs Up手势，置信度为0.80，意图为confirm，表明驾驶员确认了某些操作。语音数据识别文本为'回憶恢復,不用再提醒我注意点分散'，情感倾向为negative，可能表示驾驶员对之前的提醒感到不满。综合分析，驾驶员已从分心状态恢复并确认注意道路，因此执行NoticeRoad指令，给予正面反馈。",
+      "action_code": "NoticeRoad"
+    },
+    "confidence": 0.9,
+    "processing_time": 11.454475402832031,
+    "success": true,
+    "error_message": null,
+    "context_data": null
+  },
+  {
+    "timestamp": "2025-05-31T15:49:59.296076",
+    "user_id": "default_user",
+    "session_id": "a7968758-657b-46c8-a44d-81b8ddc899d1",
+    "interaction_type": "ai_analysis",
+    "modality": "multimodal",
+    "input_data": {
+      "modality": "multimodal",
+      "type": "ai_analysis",
+      "category": "system",
+      "gaze_data": {
+        "state": "left",
+        "duration": 3.28229022026062,
+        "deviation_level": "severe",
+        "distraction_detected": true
+      },
+      "gesture_data": {
+        "gesture": "none",
+        "confidence": 0.0,
+        "intent": "unknown"
+      },
+      "speech_data": {
+        "text": "",
+        "intent": "unknown",
+        "emotion": "neutral"
+      },
+      "user_id": "default_user",
+      "user_settings": {
+        "user_id": "default_user",
+        "interaction_stats": {
+          "most_used_gesture": "none",
+          "most_used_voice_command": "none",
+          "total_interactions": 0,
+          "gesture_stats": {},
+          "voice_stats": {}
+        },
+        "most_used_gesture": "none",
+        "most_used_voice_command": "none"
+      }
+    },
+    "ai_response": {
+      "confidence": 0.9,
+      "recommendation": "检测到您视线偏离道路超过3秒，请集中注意力驾驶。",
+      "reasoning": "根据眼动数据分析，驾驶员视线持续向左偏离3.3秒，虽然偏离程度显示为正常，但持续时间超过安全阈值。手势和语音数据未检测到任何交互行为，表明驾驶员可能处于分心状态。根据安全优先原则，系统应优先提醒驾驶员注意道路安全。",
+      "action_code": "distract"
+    },
+    "confidence": 0.9,
+    "processing_time": 7.9207446575164795,
+    "success": true,
+    "error_message": null,
+    "context_data": null
+  },
+  {
+    "timestamp": "2025-05-31T15:50:09.798854",
+    "user_id": "default_user",
+    "session_id": "a7968758-657b-46c8-a44d-81b8ddc899d1",
+    "interaction_type": "ai_analysis",
+    "modality": "multimodal",
+    "input_data": {
+      "modality": "multimodal",
+      "type": "ai_analysis",
+      "category": "system",
+      "gaze_data": {
+        "state": "left",
+        "duration": 2.1065235137939453,
+        "deviation_level": "mild",
+        "distraction_detected": false
+      },
+      "gesture_data": {
+        "gesture": "Thumbs Up",
+        "confidence": 0.7458264827728271,
+        "intent": "confirm"
+      },
+      "speech_data": {
+        "text": "",
+        "intent": "unknown",
+        "emotion": "neutral"
+      },
+      "user_id": "default_user",
+      "user_settings": {
+        "user_id": "default_user",
+        "interaction_stats": {
+          "most_used_gesture": "none",
+          "most_used_voice_command": "none",
+          "total_interactions": 0,
+          "gesture_stats": {},
+          "voice_stats": {}
+        },
+        "most_used_gesture": "none",
+        "most_used_voice_command": "none"
+      }
+    },
+    "ai_response": {
+      "confidence": 0.75,
+      "recommendation": "感谢您恢复注意力，请继续保持专注驾驶。",
+      "reasoning": "驾驶员之前处于分心状态，但通过手势（Thumbs Up）确认已恢复注意力。眼动数据显示视线状态正常，没有持续偏离。语音数据无异常。根据安全优先原则，给予正面鼓励并确认驾驶员已注意道路。",
+      "action_code": "NoticeRoad"
+    },
+    "confidence": 0.75,
+    "processing_time": 6.719117641448975,
+    "success": true,
+    "error_message": null,
+    "context_data": null
+  },
+  {
+    "timestamp": "2025-05-31T15:50:16.481383",
+    "user_id": "default_user",
+    "session_id": "a7968758-657b-46c8-a44d-81b8ddc899d1",
+    "interaction_type": "ai_analysis",
+    "modality": "multimodal",
+    "input_data": {
+      "modality": "multimodal",
+      "type": "ai_analysis",
+      "category": "system",
+      "gaze_data": {
+        "state": "left",
+        "duration": 9.346187114715576,
+        "deviation_level": "severe",
+        "distraction_detected": true
+      },
+      "gesture_data": {
+        "gesture": "none",
+        "confidence": 0.0,
+        "intent": "unknown"
+      },
+      "speech_data": {
+        "text": "",
+        "intent": "unknown",
+        "emotion": "neutral"
+      },
+      "user_id": "default_user",
+      "user_settings": {
+        "user_id": "default_user",
+        "interaction_stats": {
+          "most_used_gesture": "none",
+          "most_used_voice_command": "none",
+          "total_interactions": 0,
+          "gesture_stats": {},
+          "voice_stats": {}
+        },
+        "most_used_gesture": "none",
+        "most_used_voice_command": "none"
+      }
+    },
+    "ai_response": {
+      "confidence": 0.9,
+      "recommendation": "请保持注意力集中，目视前方道路。",
+      "reasoning": "系统检测到驾驶员视线偏离道路已持续9.3秒，且未检测到任何手势或语音交互。根据分心检测上下文，这属于明显的分心驾驶行为。根据安全优先原则，应立即提醒驾驶员注意道路安全。",
+      "action_code": "distract"
+    },
+    "confidence": 0.9,
+    "processing_time": 6.625021457672119,
+    "success": true,
+    "error_message": null,
+    "context_data": null
+  },
+  {
+    "timestamp": "2025-05-31T15:56:45.186993",
+    "user_id": "default_user",
+    "session_id": "c1f117b8-cf6c-469e-aeba-865703c6777a",
+    "interaction_type": "ai_analysis",
+    "modality": "multimodal",
+    "input_data": {
+      "modality": "multimodal",
+      "type": "ai_analysis",
+      "category": "system",
+      "gaze_data": {
+        "state": "left",
+        "duration": 3.058056116104126,
+        "deviation_level": "severe",
+        "distraction_detected": true
+      },
+      "gesture_data": {
+        "gesture": "none",
+        "confidence": 0.0,
+        "intent": "unknown"
+      },
+      "speech_data": {
+        "text": "",
+        "intent": "unknown",
+        "emotion": "neutral"
+      },
+      "user_id": "default_user",
+      "user_settings": {
+        "user_id": "default_user",
+        "interaction_stats": {
+          "most_used_gesture": "none",
+          "most_used_voice_command": "none",
+          "total_interactions": 0,
+          "gesture_stats": {},
+          "voice_stats": {}
+        },
+        "most_used_gesture": "none",
+        "most_used_voice_command": "none"
+      }
+    },
+    "ai_response": {
+      "confidence": 0.9,
+      "recommendation": "请注意前方道路，视线请勿长时间偏离。",
+      "reasoning": "系统检测到驾驶员视线向左偏离道路超过3秒，且未检测到任何手势或语音交互，存在分心驾驶风险。根据安全优先原则，立即提醒驾驶员注意道路安全。",
+      "action_code": "distract"
+    },
+    "confidence": 0.9,
+    "processing_time": 9.014698266983032,
+    "success": true,
+    "error_message": null,
+    "context_data": null
+  },
+  {
+    "timestamp": "2025-05-31T15:56:54.756293",
+    "user_id": "default_user",
+    "session_id": "c1f117b8-cf6c-469e-aeba-865703c6777a",
+    "interaction_type": "ai_analysis",
+    "modality": "multimodal",
+    "input_data": {
+      "modality": "multimodal",
+      "type": "ai_analysis",
+      "category": "system",
+      "gaze_data": {
+        "state": "left",
+        "duration": 0.0,
+        "deviation_level": "normal",
+        "distraction_detected": false
+      },
+      "gesture_data": {
+        "gesture": "Thumbs Up",
+        "confidence": 0.7685097455978394,
+        "intent": "confirm"
+      },
+      "speech_data": {
+        "text": "",
+        "intent": "unknown",
+        "emotion": "neutral"
+      },
+      "user_id": "default_user",
+      "user_settings": {
+        "user_id": "default_user",
+        "interaction_stats": {
+          "most_used_gesture": "none",
+          "most_used_voice_command": "none",
+          "total_interactions": 0,
+          "gesture_stats": {},
+          "voice_stats": {}
+        },
+        "most_used_gesture": "none",
+        "most_used_voice_command": "none"
+      }
+    },
+    "ai_response": {
+      "confidence": 0.77,
+      "recommendation": "感谢您的确认，已检测到您恢复注意力。请继续保持专注驾驶。",
+      "reasoning": "根据手势数据检测到'Thumbs Up'手势，置信度为0.77，手势意图为'confirm'，结合上下文说明驾驶员之前处于分心状态但已通过手势确认恢复注意力。眼动数据显示视线状态正常，语音数据无异常。因此判断驾驶员已恢复注意力，执行注意力恢复确认操作。",
+      "action_code": "NoticeRoad"
+    },
+    "confidence": 0.77,
+    "processing_time": 7.521906852722168,
+    "success": true,
+    "error_message": null,
+    "context_data": null
+  },
+  {
+    "timestamp": "2025-05-31T15:57:02.677883",
+    "user_id": "default_user",
+    "session_id": "c1f117b8-cf6c-469e-aeba-865703c6777a",
+    "interaction_type": "ai_analysis",
+    "modality": "multimodal",
+    "input_data": {
+      "modality": "multimodal",
+      "type": "ai_analysis",
+      "category": "system",
+      "gaze_data": {
+        "state": "left",
+        "duration": 7.695106506347656,
+        "deviation_level": "severe",
+        "distraction_detected": true
+      },
+      "gesture_data": {
+        "gesture": "none",
+        "confidence": 0.0,
+        "intent": "unknown"
+      },
+      "speech_data": {
+        "text": "",
+        "intent": "unknown",
+        "emotion": "neutral"
+      },
+      "user_id": "default_user",
+      "user_settings": {
+        "user_id": "default_user",
+        "interaction_stats": {
+          "most_used_gesture": "none",
+          "most_used_voice_command": "none",
+          "total_interactions": 0,
+          "gesture_stats": {},
+          "voice_stats": {}
+        },
+        "most_used_gesture": "none",
+        "most_used_voice_command": "none"
+      }
+    },
+    "ai_response": {
+      "confidence": 0.9,
+      "recommendation": "检测到您视线偏离道路超过7秒，请集中注意力驾驶。",
+      "reasoning": "眼动数据显示驾驶员视线向左偏离道路7.7秒，虽然偏离程度显示正常，但持续时间较长，存在分心驾驶风险。手势数据和语音数据未检测到相关交互行为，进一步确认驾驶员处于分心状态。根据安全优先原则，系统应提醒驾驶员集中注意力。",
+      "action_code": "distract"
+    },
+    "confidence": 0.9,
+    "processing_time": 7.8620476722717285,
+    "success": true,
+    "error_message": null,
+    "context_data": null
+  },
+  {
+    "timestamp": "2025-05-31T16:01:41.709901",
+    "user_id": "default_user",
+    "session_id": "4fa39147-4bab-49d7-bc13-267cb94d8c8f",
+    "interaction_type": "ai_analysis",
+    "modality": "multimodal",
+    "input_data": {
+      "modality": "multimodal",
+      "type": "ai_analysis",
+      "category": "system",
+      "gaze_data": {
+        "state": "right",
+        "duration": 3.3509066104888916,
+        "deviation_level": "severe",
+        "distraction_detected": true
+      },
+      "gesture_data": {
+        "gesture": "none",
+        "confidence": 0.0,
+        "intent": "unknown"
+      },
+      "speech_data": {
+        "text": "",
+        "intent": "unknown",
+        "emotion": "neutral"
+      },
+      "user_id": "default_user",
+      "user_settings": {
+        "user_id": "default_user",
+        "interaction_stats": {
+          "most_used_gesture": "none",
+          "most_used_voice_command": "none",
+          "total_interactions": 0,
+          "gesture_stats": {},
+          "voice_stats": {}
+        },
+        "most_used_gesture": "none",
+        "most_used_voice_command": "none"
+      }
+    },
+    "ai_response": {
+      "confidence": 0.9,
+      "recommendation": "检测到您的视线偏离道路超过3秒，请集中注意力驾驶。",
+      "reasoning": "眼动数据显示驾驶员视线向右偏离道路3.4秒，且未检测到任何手势或语音交互，符合分心驾驶特征。根据安全优先原则，系统应优先提醒驾驶员注意道路安全。",
+      "action_code": "distract"
+    },
+    "confidence": 0.9,
+    "processing_time": 7.307977676391602,
+    "success": true,
+    "error_message": null,
+    "context_data": null
+  },
+  {
+    "timestamp": "2025-05-31T16:01:57.352326",
+    "user_id": "default_user",
+    "session_id": "4fa39147-4bab-49d7-bc13-267cb94d8c8f",
+    "interaction_type": "ai_analysis",
+    "modality": "multimodal",
+    "input_data": {
+      "modality": "multimodal",
+      "type": "ai_analysis",
+      "category": "system",
+      "gaze_data": {
+        "state": "center",
+        "duration": 0.0,
+        "deviation_level": "normal",
+        "distraction_detected": false
+      },
+      "gesture_data": {
+        "gesture": "Thumbs Up",
+        "confidence": 0.8055999279022217,
+        "intent": "confirm"
+      },
+      "speech_data": {
+        "text": "",
+        "intent": "unknown",
+        "emotion": "neutral"
+      },
+      "user_id": "default_user",
+      "user_settings": {
+        "user_id": "default_user",
+        "interaction_stats": {
+          "most_used_gesture": "none",
+          "most_used_voice_command": "none",
+          "total_interactions": 0,
+          "gesture_stats": {},
+          "voice_stats": {}
+        },
+        "most_used_gesture": "none",
+        "most_used_voice_command": "none"
+      }
+    },
+    "ai_response": {
+      "confidence": 0.81,
+      "recommendation": "感谢您恢复注意力，请继续保持专注驾驶。",
+      "reasoning": "根据手势数据检测到驾驶员做出了'Thumbs Up'手势，置信度为0.81，手势意图为'confirm'，结合眼动数据显示视线状态为'center'且偏离程度正常，可以确认驾驶员已经从分心状态恢复注意力。根据安全优先原则和给定的action_code库，选择'NoticeRoad'作为操作指令，并提供正面鼓励的语音提示。",
+      "action_code": "NoticeRoad"
+    },
+    "confidence": 0.81,
+    "processing_time": 8.021488189697266,
+    "success": true,
+    "error_message": null,
+    "context_data": null
+  },
+  {
+    "timestamp": "2025-05-31T16:02:09.582235",
+    "user_id": "default_user",
+    "session_id": "4fa39147-4bab-49d7-bc13-267cb94d8c8f",
+    "interaction_type": "ai_analysis",
+    "modality": "multimodal",
+    "input_data": {
+      "modality": "multimodal",
+      "type": "ai_analysis",
+      "category": "system",
+      "gaze_data": {
+        "state": "right",
+        "duration": 3.0704238414764404,
+        "deviation_level": "severe",
+        "distraction_detected": true
+      },
+      "gesture_data": {
+        "gesture": "none",
+        "confidence": 0.0,
+        "intent": "unknown"
+      },
+      "speech_data": {
+        "text": "",
+        "intent": "unknown",
+        "emotion": "neutral"
+      },
+      "user_id": "default_user",
+      "user_settings": {
+        "user_id": "default_user",
+        "interaction_stats": {
+          "most_used_gesture": "none",
+          "most_used_voice_command": "none",
+          "total_interactions": 0,
+          "gesture_stats": {},
+          "voice_stats": {}
+        },
+        "most_used_gesture": "none",
+        "most_used_voice_command": "none"
+      }
+    },
+    "ai_response": {
+      "confidence": 0.9,
+      "recommendation": "检测到您的视线偏离道路超过3秒，请集中注意力驾驶。",
+      "reasoning": "根据眼动数据显示，驾驶员视线偏离道路已持续3.1秒，虽然偏离程度正常，但持续时间超过安全阈值。手势和语音数据未检测到其他交互意图，因此判断为分心驾驶状态。根据安全优先原则，需要立即提醒驾驶员注意道路安全。",
+      "action_code": "distract"
+    },
+    "confidence": 0.9,
+    "processing_time": 7.618024826049805,
+    "success": true,
+    "error_message": null,
+    "context_data": null
+  },
+  {
+    "timestamp": "2025-05-31T16:02:19.725782",
+    "user_id": "default_user",
+    "session_id": "4fa39147-4bab-49d7-bc13-267cb94d8c8f",
+    "interaction_type": "ai_analysis",
+    "modality": "multimodal",
+    "input_data": {
+      "modality": "multimodal",
+      "type": "ai_analysis",
+      "category": "system",
+      "gaze_data": {
+        "state": "center",
+        "duration": 0.0,
+        "deviation_level": "normal",
+        "distraction_detected": false
+      },
+      "gesture_data": {
+        "gesture": "Thumbs Up",
+        "confidence": 0.7667626738548279,
+        "intent": "confirm"
+      },
+      "speech_data": {
+        "text": "",
+        "intent": "unknown",
+        "emotion": "neutral"
+      },
+      "user_id": "default_user",
+      "user_settings": {
+        "user_id": "default_user",
+        "interaction_stats": {
+          "most_used_gesture": "none",
+          "most_used_voice_command": "none",
+          "total_interactions": 0,
+          "gesture_stats": {},
+          "voice_stats": {}
+        },
+        "most_used_gesture": "none",
+        "most_used_voice_command": "none"
+      }
+    },
+    "ai_response": {
+      "confidence": 0.77,
+      "recommendation": "感谢您确认注意力已恢复，请继续保持专注驾驶。",
+      "reasoning": "根据手势数据检测到驾驶员做了'Thumbs Up'手势（置信度0.77），结合特殊上下文中说明驾驶员之前处于分心状态但已通过gesture确认恢复注意力。眼动数据显示视线状态正常，语音数据无异常。因此判断驾驶员已恢复注意力，给予正面确认反馈。",
+      "action_code": "NoticeRoad"
+    },
+    "confidence": 0.77,
+    "processing_time": 7.753540754318237,
+    "success": true,
+    "error_message": null,
+    "context_data": null
   }
 ]
