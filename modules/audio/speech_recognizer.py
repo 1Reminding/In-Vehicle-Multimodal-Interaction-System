@@ -9,7 +9,8 @@ import torch
 import tempfile
 import io
 
-_DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
+# _DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
+_DEVICE = "cpu"
 _MODEL = whisper.load_model("turbo").to(_DEVICE)
 
 
