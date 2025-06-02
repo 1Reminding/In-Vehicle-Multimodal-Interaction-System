@@ -41,8 +41,8 @@ class HeadPoseDetector:
         self.pitch_down_frames = 0    # 连续低头帧计数
 
         # ----------- dlib 初始化 -----------
-        predictor_path = os.path.join(os.path.dirname(__file__),
-                                      "shape_predictor_68_face_landmarks.dat")
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        predictor_path = os.path.join(current_dir, "models", "shape_predictor_68_face_landmarks.dat")
         if not os.path.exists(predictor_path):
             raise FileNotFoundError(f"找不到面部特征点预测器: {predictor_path}")
 

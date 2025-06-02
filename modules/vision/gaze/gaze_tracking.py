@@ -33,7 +33,9 @@ class GazeTracking(object):
 
         # _predictor is used to get facial landmarks of a given face
         cwd = os.path.abspath(os.path.dirname(__file__))
-        model_path = os.path.abspath(os.path.join(cwd, "trained_models/shape_predictor_68_face_landmarks.dat"))
+        model_path = os.path.abspath(os.path.join(cwd, "models/shape_predictor_68_face_landmarks.dat"))
+        if not os.path.exists(model_path):
+            raise FileNotFoundError(f"找不到面部特征点预测器: {model_path}")
         self._predictor = dlib.shape_predictor(model_path)
 
     @property
