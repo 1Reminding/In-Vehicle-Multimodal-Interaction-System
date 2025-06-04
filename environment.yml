@@ -1,4 +1,4 @@
-name: multimodaltest
+name: multimodal
 channels:
   - conda-forge
   - defaults
