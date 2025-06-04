@@ -189,12 +189,12 @@ class MultimodalCollector:
     def _infer_gesture_intent(self, gesture: str) -> str:
         """推断手势意图"""
         gesture_intent_map = {
-            "Thumbs Up": "confirm",
-            "Thumbs Down": "reject",
-            "OK": "ok", # Considered as confirmation
-            "Close": "stop music", # Example action
-            "Open": "action_open", # Example action
-            "Point": "select" # Example action
+            "Thumbs Up": "确认已回到专注状态",
+            "Thumbs Down": "仍为分心状态",
+            "OK": "确认已回到专注状态", # Considered as confirmation
+            "Close": "仍为分心状态", # Example action
+            "Open": "播放音乐", # Example action
+            "Point": "打开空调" # Example action
         }
         return gesture_intent_map.get(gesture, "unknown")
 
