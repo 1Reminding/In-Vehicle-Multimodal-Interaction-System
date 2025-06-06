@@ -52,7 +52,7 @@
 
 1. 克隆项目
 ```bash
-git clone -b ai https://github.com/1Reminding/In-Vehicle-Multimodal-Interaction-System.git
+git clone https://github.com/1Reminding/In-Vehicle-Multimodal-Interaction-System.git
 cd In-Vehicle-Multimodal-Interaction-System
 ```
 
