@@ -18,25 +18,25 @@
 ## 🛠 系统架构
 
 ```
-├── app.py             # 主应用程序入口
-├── modules/           # 功能模块
-│   ├── audio/         # 音频处理模块（语音识别、录音等）
-│   ├── vision/        # 视觉处理模块（眼动追踪、手势识别等）
-│   │   ├── gaze/         # 眼动追踪
-│   │   ├── gesture/      # 手势识别
-│   │   ├── head/         # 头部姿态检测
+├── app.py                     # 主应用程序入口
+├── modules/                   # 功能模块
+│   ├── audio/                 # 音频处理模块（语音识别、录音等）
+│   ├── vision/                # 视觉处理模块（眼动追踪、手势识别等）
+│   │   ├── gaze/              # 眼动追踪
+│   │   ├── gesture/           # 手势识别
+│   │   ├── head/              # 头部姿态检测
 │   │   └── camera_manager.py  # 摄像头管理
-│   ├── actions/       # 动作处理模块（命令执行、语音反馈等）
-│   ├── ai/            # AI 相关模块（DeepSeek API 集成等）
-│   └── system/        # 系统管理模块（用户管理、日志等）
-├── ui/                # 用户界面
-│   ├── Main.qml       # 主界面 QML 文件
-│   ├── dashboard.py   # 仪表盘组件
-│   └── assets/        # UI 资源文件
-├── data/              # 数据文件（运行后生成）
-│   ├── logs/          # 交互日志
-│   └── user_configs/  # 用户配置
-└── environment.yml    # Conda 环境配置文件
+│   ├── actions/               # 动作处理模块（命令执行、语音反馈等）
+│   ├── ai/                    # AI 相关模块（DeepSeek API 集成等）
+│   └── system/                # 系统管理模块（用户管理、日志等）
+├── ui/                        # 用户界面
+│   ├── Main.qml               # 主界面 QML 文件
+│   ├── dashboard.py           # 仪表盘组件
+│   └── assets/                # UI 资源文件
+├── data/                      # 数据文件（运行后生成）
+│   ├── logs/                  # 交互日志
+│   └── user_configs/          # 用户配置
+└── environment.yml            # Conda 环境配置文件
 ```
 
 ## 📋 环境要求
