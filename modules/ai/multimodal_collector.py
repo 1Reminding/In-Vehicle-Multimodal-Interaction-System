@@ -200,7 +200,7 @@ class MultimodalCollector:
 
     def _is_confirmation_gesture(self, intent: str) -> bool:
         """判断是否为确认手势意图"""
-        return intent in ["confirm", "ok"]
+        return "确认已回到专注状态" in intent or "确认" in intent or "ok" in intent.lower()
 
     def _infer_emotion(self, text: str) -> str:
         """推断情感倾向（简单规则）"""
