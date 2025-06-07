@@ -50,7 +50,7 @@ class UIBackend(QObject):
     @pyqtSlot(str)
     def requestAction(self, cmd):
         print(f"🔷 前端请求动作：{cmd}")
-        handle_action(cmd)
+        handle_action(cmd,get_app_instance())
 
     @pyqtSlot(str)
     def setCurrentUser(self, user_id):
@@ -74,6 +74,7 @@ class AIMultimodalApp:
         self.running = False
         self.audio_thread = None
         self.vision_thread = None
+        self.recorder = None
 
         # 当前用户信息（简化）
         self.current_user_id = None
@@ -101,6 +102,16 @@ class AIMultimodalApp:
         print("   - AI分析结果通过文本显示")
         print("   - 自动记录所有交互日志用于分析优化")
         print("   - 按 Ctrl+C 退出系统")
+
+    def pause_recording(self):
+        """暂停录音（供 TTS 调用）"""
+        if self.recorder:
+            self.recorder.pause()
+
+    def resume_recording(self):
+        """恢复录音（供 TTS 调用）"""
+        if self.recorder:
+            self.recorder.resume()
 
     def _initialize_system_management(self):
         """初始化系统管理功能（简化版，主要用于交互日志）"""
@@ -212,12 +223,12 @@ class AIMultimodalApp:
                 try:
                     action_data = json.loads(ai_response.action_code)
                     print(f"   ⚙️ 执行操作: {action_data}")
-                    handle_action(action_data)
+                    handle_action(action_data, self)
                     ui_backend.commandIssued.emit(json.dumps(action_data))
 
                 except json.JSONDecodeError:
                     print(f"   ⚙️ 执行操作: {ai_response.action_code}")
-                    handle_action(ai_response.action_code)
+                    handle_action(ai_response.action_code, self)
                     ui_backend.commandIssued.emit(ai_response.action_code)
 
                 # 文本反馈
@@ -300,10 +311,10 @@ class AIMultimodalApp:
     def audio_worker(self):
         """音频工作线程"""
         print("🎤 音频线程启动")
-        rec = Recorder()
+        self.recorder = Recorder()
 
         try:
-            for seg in rec.record_stream():
+            for seg in self.recorder.record_stream():
                 if not self.running:
                     break
 

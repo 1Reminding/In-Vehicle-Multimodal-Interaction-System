@@ -1,9 +1,9 @@
 import pyttsx3
+from typing import Optional, Any, Union
 
 tts_engine = pyttsx3.init()
-# 可以根据需要调整语速、音量、声音等参数，例如：
-# tts_engine.setProperty('rate', 150)   # 语速，默认大约 200
-# tts_engine.setProperty('volume', 0.8) # 音量，范围 0.0 ~ 1.0
+# tts_engine.setProperty('rate', 150)   # 语速示例
+# tts_engine.setProperty('volume', 0.8) # 音量示例
 
 FEEDBACK_TEXT = {
     "TurnOnAC": "好的，我将为您打开空调",
@@ -14,27 +14,39 @@ FEEDBACK_TEXT = {
     "distract": "请注意安全驾驶，避免分心"
 }
 
-def speak_text(text: str) -> None:
-    """通过 pyttsx3 播报文字"""
+
+def speak_text(text: str, app: Optional[Any] = None) -> None:
+    """通过 pyttsx3 播报文字；播报期间暂停录音"""
+    if app is not None:
+        app.pause_recording()  # 暂停 Recorder
     tts_engine.say(text)
     tts_engine.runAndWait()
+    if app is not None:
+        app.resume_recording()  # 恢复 Recorder
 
-def handle_action(action: str) -> None:
-    """统一的动作反馈入口：打印并播报"""
-    cmd = action.strip()
+
+def handle_action(action: Union[str, dict], app: Optional[Any] = None) -> None:
+    """
+    统一动作反馈入口：
+      - 字符串：直接视为指令，如 "TurnOnAC"
+      - 字典：尝试取常见字段或第一个键
+    """
+    # -------- 把 action 转成字符串 cmd --------
+    if isinstance(action, dict):
+        # ① DeepSeek 常用格式 {"command":"TurnOnAC"} → 取 value
+        if "command" in action:
+            cmd = str(action["command"])
+        # ② 也可能直接是 {"TurnOnAC":1} → 取第一个键
+        else:
+            cmd = str(next(iter(action.keys())))
+    else:
+        cmd = str(action).strip()
+
+    # -------- 原有逻辑保持不变 --------
     text = FEEDBACK_TEXT.get(cmd)
     if text:
-        # 打印到控制台
         print(f"[Action] {text}")
-        # 语音播报
-        speak_text(text)
+        speak_text(text, app)
     else:
-        # 如果找不到对应指令，也可以选择提示或者不作处理
         print(f"[Action] 未知指令：{cmd}")
-        speak_text("抱歉，未识别您的指令。")
-
-# 示例调用
-if __name__ == "__main__":
-    handle_action("TurnOnAC")
-    handle_action("StopMusic")
-    handle_action("distract")
+        speak_text("抱歉，未识别您的指令。", app)
